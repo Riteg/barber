@@ -1,15 +1,16 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import * as firebase from 'firebase';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import ExpoStatusBar from "expo-status-bar/build/ExpoStatusBar";
 import TabNavigator from "./screens/TabNavigator"
-import StackNavigator from "./screens/StackNavigator"
+import StackNavigator from "./screens/StackNavigator";
+import MapStack from './screens/MapStack';
 import { LogBox } from 'react-native';
 LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
-LogBox.ignoreAllLogs()
+LogBox.ignoreAllLogs();//Ignore all log notifications
+
 export default function App() {
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState();
@@ -44,4 +45,3 @@ export default function App() {
     </>
   );
 }
-

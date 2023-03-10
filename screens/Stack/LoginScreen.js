@@ -1,60 +1,9 @@
 import { useNavigation } from '@react-navigation/core'
 import * as React from 'react'
 import {useEffect} from "react";
-import { SafeAreaView, StyleSheet, Text,Button ,TextInput, TouchableOpacity, View } from 'react-native'
+import { SafeAreaView, StyleSheet, Text,Button ,TextInput,Image, TouchableOpacity, View } from 'react-native'
 import { auth } from '../../firebase'
 import { useState } from 'react';
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  inputContainer: {
-    width: '80%'
-  },
-  input: {
-    backgroundColor: 'white',
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    borderRadius: 10,
-    marginTop: 5,
-  },
-  buttonContainer: {
-    width: '60%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 40,
-  },
-  button: {
-    backgroundColor: '#0782F9',
-    width: '100%',
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-  },
-  buttonOutline: {
-    backgroundColor: 'white',
-    marginTop: 5,
-    borderColor: '#0782F9',
-    borderWidth: 2,
-  },
-  buttonText: {
-    color: 'white',
-    fontWeight: '700',
-    fontSize: 16,
-  },
-  buttonOutlineText: {
-    color: '#0782F9',
-    fontWeight: '700',
-    fontSize: 16,
-  },
-  buttonOutlineText2: {
-    color: '#0782f9',
-    fontWeight: '700',
-    fontSize: 14,
-  },
-})
 
 
 export default function LoginScreen({ navigation }) {
@@ -100,14 +49,17 @@ export default function LoginScreen({ navigation }) {
       behavior="padding"
     >
       <View style={styles.inputContainer}>
+      <Image style={styles.tinyLogo}source={require("../../assets/l2.png")}/>
         <TextInput
           placeholder="Email"
+          placeholderTextColor={"#909090"}
           value={email}
           onChangeText={text => setEmail(text)}
           style={styles.input}
         />
         <TextInput
           placeholder="Password"
+          placeholderTextColor={"#909090"}
           value={password}
           onChangeText={text => setPassword(text)}
           style={styles.input}
@@ -133,3 +85,86 @@ export default function LoginScreen({ navigation }) {
   )
 
 }
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor:"#181818"
+  },
+  inputContainer: {
+    width: '80%'
+  },
+  buttonOutlineText2: {
+    color: '#eee',
+    fontWeight: '700',
+    fontSize: 14,
+  },
+  input: {
+    backgroundColor: '#404040',
+    color:"#fff",
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    borderRadius: 10,
+    marginTop: 5,
+  },
+  buttonContainer: {
+    width: '60%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 40,
+  },
+  button: {
+    backgroundColor: '#d90',
+    width: '100%',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  button2: {
+    backgroundColor: '#ddd',
+    justifyContent:"flex-end",
+    width: 125,
+    backgroundSize:"cover",
+    height:125,
+    padding: 15,
+    borderRadius: 15,
+    alignContent:"flex-end",
+    justifyContent:"center",
+  },
+  buttonOutline: {
+    backgroundColor: 'white',
+    marginTop: 5,
+    borderColor: '#0782F9',
+    borderWidth: 2,
+  },
+  buttonText: {
+    color: 'white',
+    fontWeight: '700',
+    fontSize: 16,
+    justifyContent:"center",
+  },
+  buttonText2: {
+    color: '#dd9900',
+    backgroundColor:"#18181875",
+    fontWeight: '700',
+    fontSize: 13,
+    justifyContent:"center",
+    textAlign:"center",
+  },
+  buttonOutlineText: {
+    color: '#0782F9',
+    fontWeight: '700',
+    fontSize: 16,
+  },
+  tinyLogo: {
+    width:200,
+    backgroundSize:"cover",
+    height:100,
+    marginBottom:15,
+    alignContent:"center",
+    justifyContent:"center",
+    alignItems:"center",
+    alignSelf:"center",
+  },
+})

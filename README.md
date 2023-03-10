@@ -1,1 +1,1 @@
-# barber
+# berber-app

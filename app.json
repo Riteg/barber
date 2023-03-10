@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Barber-App",
-    "slug": "Barber-App",
+    "name": "berber-app",
+    "slug": "barber",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -23,10 +23,17 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.burakvncc.berberapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "2fb13b6d-399f-4d2a-8b66-e211ca71e4e1"
+      }
+    },
+    "owner": "burakvncc"
   }
 }
