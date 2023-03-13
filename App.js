@@ -6,7 +6,6 @@ import { useState } from 'react';
 import ExpoStatusBar from "expo-status-bar/build/ExpoStatusBar";
 import TabNavigator from "./screens/TabNavigator"
 import StackNavigator from "./screens/StackNavigator";
-import MapStack from './screens/MapStack';
 import { LogBox } from 'react-native';
 LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
 LogBox.ignoreAllLogs();//Ignore all log notifications
