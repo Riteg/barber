@@ -286,9 +286,23 @@ export default function User({ navigation }) {
       
     
       </TabView.Item>
-      <TabView.Item style={{ backgroundColor: '#181818', width: '100%' }}>
-        <Text h1>2.sayfa</Text>
-      </TabView.Item>
+      <TabView.Item style={{ backgroundColor: "#181818", width: "100%" }}>
+          <View
+            style={{ width: width, height: height, backgroundColor: "#181818" }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                position: "absolute",
+                top: height - 180,
+              }}
+            >
+              <View style={{ width: width }}>
+                <Text style={styles.editText2}>created by: Smartist Tech</Text>
+              </View>
+            </View>
+          </View>
+        </TabView.Item>
     </TabView>
     </>
 
@@ -300,6 +314,14 @@ const styles = StyleSheet.create({
   header: {
     height: 150,
     width:width,
+  },
+  editText2: {
+    color: "#fff",
+    justifyContent: "center",
+    alignContent: "center",
+    textAlign: "center",
+    alignSelf: "center",
+    fontSize: 8,
   },
   edit:{
     position:"absolute",
