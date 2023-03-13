@@ -190,7 +190,7 @@ export default function ChooseService({ props, navigation }) {
               >
                 <Image
                   style={styles.tinyLogo}
-                  source={require("../../assets/man.png")}
+                  source={require("../../assets/man.jpg")}
                 />
                 <Text style={styles.barberbutton2}>Man</Text>
               </TouchableOpacity>
@@ -201,7 +201,7 @@ export default function ChooseService({ props, navigation }) {
               >
                 <Image
                   style={styles.tinyLogo}
-                  source={require("../../assets/kids.png")}
+                  source={require("../../assets/kid.jpg")}
                 />
                 <Text style={styles.barberbutton2}>Kids</Text>
               </TouchableOpacity>
