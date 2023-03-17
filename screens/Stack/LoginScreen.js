@@ -4,10 +4,53 @@ import {useEffect} from "react";
 import { SafeAreaView, StyleSheet, Text,Button ,Dimensions,TextInput,Image, TouchableOpacity, View } from 'react-native'
 import { auth } from '../../firebase'
 import { useState } from 'react';
+import { GoogleSignin } from '@react-native-community/google-signin';
+import { GoogleSigninButton } from '@react-native-community/google-signin';
 const width = Dimensions.get("window").width;
 const height = Dimensions.get("window").height;
 
+
 export default function LoginScreen({ navigation }) {
+  GoogleSignin.configure({
+    webClientId: '493794739289-ufha1tj3f99k2baknhhps7m9rm7jefq2.apps.googleusercontent.com',
+  });
+
+const onGoogleButtonPress = async() => {
+    // Check if your device supports Google Play
+    await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+    // Get the users ID token
+    const { idToken } = await GoogleSignin.signIn();
+  
+    // Create a Google credential with the token
+    const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+  
+    // Sign-in the user with the credential
+    const user_sign_in = auth().signWithCredential(googleCredential);
+    user_sign_in.then((user)=>{
+      console.log(user);
+    })
+    .catch((error)=> {
+      console.log(error)
+    })
+  }
+ // Set an initializing state whilst Firebase connects
+ const [initializing, setInitializing] = useState(true);
+ const [user, setUser] = useState();
+
+ // Handle user state changes
+ function onAuthStateChanged(user) {
+   setUser(user);
+   if (initializing) setInitializing(false);
+ }
+
+ useEffect(() => {
+   const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+   return subscriber; // unsubscribe on unmount
+ }, []);
+
+ if (initializing) return null;
+
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [phone, setPhone] = useState('')
@@ -75,6 +118,10 @@ export default function LoginScreen({ navigation }) {
         >
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
+        <GoogleSigninButton
+        style={{width:300,height:65}}
+      onPress={onGoogleButtonPress}
+    />
         <TouchableOpacity
           onPress={()=> navigation.navigate("RegisterScreen")}
           style={{marginTop:20}}

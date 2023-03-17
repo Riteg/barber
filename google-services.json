@@ -7,12 +7,20 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:493794739289:android:ba04add13f52f847211d48",
+        "mobilesdk_app_id": "1:493794739289:android:7cf7f91f63a2e748211d48",
         "android_client_info": {
           "package_name": "com.burakvncc.berberapp"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "493794739289-g9blmtfu0fcubafjcdsvmivg6c6uallp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.burakvncc.berberapp",
+            "certificate_hash": "fc50796ee024007101884cc77f524630b6b770ac"
+          }
+        },
         {
           "client_id": "493794739289-ruetbiqgf2t30s0edtkt4us6hrs3vmuu.apps.googleusercontent.com",
           "client_type": 1,
