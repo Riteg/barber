@@ -1,10 +1,11 @@
 import { useNavigation } from '@react-navigation/core'
 import * as React from 'react'
 import {useEffect} from "react";
-import { SafeAreaView, StyleSheet, Text,Button ,TextInput,Image, TouchableOpacity, View } from 'react-native'
+import { SafeAreaView, StyleSheet, Text,Button ,Dimensions,TextInput,Image, TouchableOpacity, View } from 'react-native'
 import { auth } from '../../firebase'
 import { useState } from 'react';
-
+const width = Dimensions.get("window").width;
+const height = Dimensions.get("window").height;
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('')
@@ -98,7 +99,7 @@ const styles = StyleSheet.create({
   buttonOutlineText2: {
     color: '#eee',
     fontWeight: '700',
-    fontSize: 14,
+    fontSize:  width < 375 ? 11 : 14,
   },
   input: {
     backgroundColor: '#404040',
@@ -141,7 +142,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white',
     fontWeight: '700',
-    fontSize: 16,
+    fontSize: width < 375 ? 13 : 16,
     justifyContent:"center",
   },
   buttonText2: {

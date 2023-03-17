@@ -10,7 +10,8 @@ import { MaterialIcons ,Feather} from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { Alert } from 'react-native';
 import { AutocompleteDropdown } from 'react-native-autocomplete-dropdown';
-import SelectDropdown from 'react-native-select-dropdown'
+import SelectDropdown from 'react-native-select-dropdown';
+import CustomAlert from "../CustomAlert";
 
 const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
@@ -21,6 +22,24 @@ export default function EditService({ navigation }) {
   const [serviceId, setServiceId] = useState("");
   const [stat, setStat] = useState("");
   const handleSubmit2 = async () => {
+        //Check for the Name TextInput
+        if (!servicename.trim()) {
+          alert('Please Enter Service Name');
+          return;
+        }
+        //Check for the Email TextInput
+        if (!servicetime.trim()) {
+          alert('Please Enter Service Time');
+          return;
+        }
+        if (stat === null) {
+          alert('Please Add Category');
+          return;
+        }
+        if (image === null) {
+          alert('Please add an image.');
+          return;
+        }
     const userRef = firebase.firestore().collection("services").doc();
     userRef.set({
       name: servicename,
@@ -41,7 +60,12 @@ export default function EditService({ navigation }) {
         serviceId: docId
       })
       .then(() => {
+        setservicename("");
+        setservicetime("");
+        setImage(null);
+        setStat(null);
         console.log("Document successfully updated!");
+        alert("Service Succesfully added")
       })
       .catch((error) => {
         console.error("Error updating document: ", error);
@@ -150,7 +174,9 @@ export default function EditService({ navigation }) {
     try {
       const docRef = firebase.firestore().collection("services").doc(selectedItem);
       await docRef.delete();
+      alert("Service Deleted Successfully!");
       console.log("Document successfully deleted!", selectedItem);
+      setSelectedItem(null)
     } catch (error) {
       console.error("Error removing document: ", error);
     }
@@ -206,6 +232,26 @@ export default function EditService({ navigation }) {
 
 
   const [modalVisible6, setModalVisible6] = useState(false);
+
+
+
+  const checkTextInput = () => {
+    //Check for the Name TextInput
+    if (!servicename.trim()) {
+      alert('Please Enter Name');
+      return;
+    }
+    //Check for the Email TextInput
+    if (!servicetime.trim()) {
+      alert('Please Enter Email');
+      return;
+    }
+    //Checked Successfully
+    //Do whatever you want
+    alert('Success');
+  };
+
+  
   return (
     <>
         <TouchableOpacity onPress={() => setModalVisible6(true)}>
@@ -236,15 +282,8 @@ export default function EditService({ navigation }) {
               height:height,
             }}
           >
-          <View style={{height:height*(2/3)}}>
-          <View style={{marginBottom:25}}>
-        <View style={{flexDirection:"row",marginBottom:15,width:width-50}}>
-          <Text style={{ color: '#668', fontSize: 13,width:width*(10/14)}}>Add Service : {(selectedItem2)}</Text>
-          <TouchableOpacity onPress={handleSubmit2}          
-            style={{backgroundColor:"#d90",width:width*(2/14),height:30,borderRadius:35,justifyContent:"center",alignContent:"flex-end"}}>
-          <Text style={styles.buttonText2}>Add</Text>
-            </TouchableOpacity>
-          </View>
+          <View style={{height:height*(3/4)}}>
+          <View style={{marginBottom:width < 375 ? 10 : 25}}>
           <TextInput
               placeholder="Name"
               placeholderTextColor={"#909090"}
@@ -283,7 +322,7 @@ export default function EditService({ navigation }) {
 />
 <View style={{backgroundColor:"#404040",width:width-50,alignItems:"center",borderRadius:10,flexDirection:"row",marginTop:20 }}>
 <Text style={{color:'#909090',textAlign:"center",fontSize:13,paddingLeft:0,fontWeight:"600",width:120}}>Choose Picture</Text>
-    <View style={{marginLeft:85}}>
+    <View style={{marginLeft:width < 375 ? 20 : 85}}>
     <TouchableOpacity onPress={pickImage}>
         {image ? (
           <ImageBackground
@@ -306,15 +345,14 @@ export default function EditService({ navigation }) {
     </View>
     </View> 
 </View>
-
-
-        <View style={{flexDirection:"row",width:width-50}}>
-          <Text style={{ color: '#668', fontSize: 13,width:width*(10/14)}}>Add Barber : {(selectedItem)}</Text>
-          <TouchableOpacity onPress={handleSubmit}          
+        <View style={{flexDirection:"row",marginBottom:15,width:width-50}}>
+          <Text style={{ color: '#668', fontSize: 13,width:width*(10/14)}}>Add Service : {(selectedItem2)}</Text>
+          <TouchableOpacity onPress={handleSubmit2}          
             style={{backgroundColor:"#d90",width:width*(2/14),height:30,borderRadius:35,justifyContent:"center",alignContent:"flex-end"}}>
-          <Text style={styles.buttonText2}>Remove</Text>
+          <Text style={styles.buttonText2}>Add</Text>
             </TouchableOpacity>
           </View>
+
         <AutocompleteDropdown
           ref={searchRef}
           controller={controller => {
@@ -367,10 +405,17 @@ export default function EditService({ navigation }) {
           //  showClear={false}
         >
         </AutocompleteDropdown>
+        <View style={{flexDirection:"row",width:width-50,marginTop:15}}>
+          <Text style={{ color: '#668', fontSize: 13,width:width*(10/14)}}>Remove Service : {(selectedItem)}</Text>
+          <TouchableOpacity onPress={handleSubmit}          
+            style={{backgroundColor:"#d90",width:width*(2/14),height:30,borderRadius:35,justifyContent:"center",alignContent:"flex-end"}}>
+          <Text style={styles.buttonText2}>Remove</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
 
-        <View style={{flexDirection:"row",position:"absolute",width:width,alignItems:"center",alignContent:"center",justifyContent:"center",bottom:50}}>
+        <View style={{flexDirection:"row",position:"absolute",width:width,alignItems:"center",alignContent:"center",justifyContent:"center",bottom:30}}>
             <TouchableOpacity onPress={() => setModalVisible6(false)}          
             style={styles.button3}>
           <Text style={styles.buttonText2}>Close</Text>
@@ -495,7 +540,7 @@ const styles = StyleSheet.create({
   buttonText2: {
     color: '#fff',
     fontWeight: '700',
-    fontSize: 13,
+    fontSize: width < 375 ? 9 : 13,
     justifyContent:"center",
     textAlign:"center",
   },

@@ -425,7 +425,7 @@ const styles = StyleSheet.create({
   buttonText2: {
     color: '#fff',
     fontWeight: '700',
-    fontSize: 13,
+    fontSize: width < 375 ? 9 : 13,
     justifyContent:"center",
     textAlign:"center",
   },

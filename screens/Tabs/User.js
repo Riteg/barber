@@ -1,52 +1,312 @@
-import { View, SafeAreaView, Dimensions,ImageBackground,Button,Modal, TouchableOpacity,StyleSheet, TextInput, ScrollView, ViewComponent } from 'react-native'
-import { useNavigation } from '@react-navigation/core'
-import React,{useEffect,useState} from 'react'
-import { auth } from '../../firebase'
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Tab, Text, TabView ,ListItem,Avatar,Image } from '@rneui/themed';
-import * as firebase from 'firebase';
-import { signOut } from 'firebase/auth'
-import { MaterialIcons } from '@expo/vector-icons';
-import * as ImagePicker from 'expo-image-picker';
-import { Alert } from 'react-native';
-import EditBarber from "./AdminPanel/EditBarber";
-import EditAdmin from "./AdminPanel/EditAdmin";
-import EditService from "./AdminPanel/EditService";
-import EditTime from "./AdminPanel/EditTime";
-import FullName from "./Profile/FullName";
-import Email from "./Profile/Email";
-import Phone from "./Profile/Phone";
-import Password from "./Profile/Password";
+import {
+  View,
+  RefreshControl,
+  SafeAreaView,
+  Dimensions,
+  ImageBackground,
+  Button,
+  Modal,
+  Pressable,
+  TouchableHighlight,
+  TouchableWithoutFeedback,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollableTabView,
+  TextInput,
+  NestedScrollView,
+  ScrollView,
+  ViewComponent,
+  SectionList,
+  FlatList,
+  VirtualizedList,
+} from "react-native";
+import { useNavigation } from "@react-navigation/core";
+import React, { useEffect, useState } from "react";
+import { auth } from "../../firebase";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Tab, Text, TabView, ListItem, Avatar, Image } from "@rneui/themed";
+import * as firebase from "firebase";
+import { signOut } from "firebase/auth";
+import * as ImagePicker from "expo-image-picker";
+import { Alert } from "react-native";
 import ProfilePicture from "./Profile/ProfilePicture";
 
-const width = Dimensions.get('window').width
-const height = Dimensions.get('window').height
-export default function User({ navigation }) {
+const width = Dimensions.get("window").width;
+const height = Dimensions.get("window").height;
+const guidelineBaseWidth = 350;
+const guidelineBaseHeight = 680;
+const scale = size => width / guidelineBaseWidth * size;
+const verticalScale = size => height / guidelineBaseHeight * size;
+const moderateScale = (size, factor = 0.5) => size + ( scale(size) - size ) * factor;
+
+export default function Admin({ navigation }) {
+
+
+  function Item(props) {
+    const { index, item } = props;
+    return (
+      <TouchableHighlight
+        key={item.id}
+        onPressIn={() => setSelectedItem(item.id)}
+        onPress={() => setModalVisible(true)}
+      >
+      <View style={{flex:1,width:width}}>
+      <ListItem containerStyle={{ backgroundColor: index === 0 ? "#161616" : index === 1 ? "#181818" : index === 2 ? "#161616" : index === 3 ? "#181818" : "",height:width < 375 ? 49 : 75 }}>
+          <ListItem.Content>
+            <ListItem.Title style={{ color: "#9f9f9f" ,fontSize: width < 375 ? 12 : 24}}>
+              {item.title}
+            </ListItem.Title>
+            <ListItem.Subtitle style={{ color: "#fafafa" ,fontSize: width < 375 ? 11 : 24}}>
+              {index === 0 ? fullname : index === 1 ? currentEmail : index === 2 ? phone : index === 3 ? "****" : ""}
+            </ListItem.Subtitle>
+          </ListItem.Content>
+          <ListItem.Chevron color="white" />
+        </ListItem>
+        </View>
+      </TouchableHighlight>
+    );
+  }
+  
+  const data = [
+    { id: '1', title: 'FullName'},
+    { id: '2', title: 'Email' },
+    { id: '3', title: 'Phone'},
+    { id: '4', title: 'Password'},
+  ];
+
+
+  const [modalVisible, setModalVisible] = useState("");
+  const [selectedItem, setSelectedItem] = useState(null);
   const [index, setIndex] = React.useState(0);
-  const [expanded, setExpanded] = React.useState(false);
-  const [expanded2, setExpanded2] = React.useState(false);
-  const userId = firebase.auth().currentUser.uid; 
-  const userRef = firebase.firestore().collection('users').doc(userId);
-   userRef.get().then((doc) => {
-      const userData = doc.data();
-      const fullname = userData.fullname;
-      setFullname(fullname)
-      const phone = userData.phone;
-      setPhone(phone)
-      const password = userData.password;
-      setPassword(password)
-      const email = userData.email;
-      setCurrentEmail(email)
-      const image = userData.image;
-      setImage(image)
-      const admin = userData.admin;
+  const [fullname, setFullname] = React.useState("");
+  const [phone, setPhone] = React.useState("");
+  const [adminmi, setAdminmi] = React.useState("");
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [image, setImage] = useState(null);
+  const [image2, setImage2] = useState("");
+  const [phonenew, setPhonenew] = useState("");
+  const [uploading, setUploading] = useState("");
+  const [emailnew, setEmailnew] = useState("");
+  const [fullnamenew, setFullnamenew] = useState("");
+  const collectionRef = firebase.firestore().collection("users").doc(userId);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [currentEmail, setCurrentEmail] = useState("");
+  const [newEmail, setnewEmail] = useState("");
+  const [documentCount, setDocumentCount] = useState(0);
+  const [documentCount2, setDocumentCount2] = useState(0);
+  const userId = firebase.auth().currentUser.uid;
+  const userRef = firebase.firestore().collection("users").doc(userId);
+
+
+  userRef.get().then((doc) => {
+    const userData = doc.data();
+    const fullname = userData.fullname;
+    setFullname(fullname);
+    const phone = userData.phone;
+    setPhone(phone);
+    const password = userData.password;
+    setPassword(password);
+    const email = userData.email;
+    setCurrentEmail(email);
+    const image = userData.image;
+    setImage(image);
+    const admin = userData.admin;
   });
   let adminValue = null;
   const [admin, setAdmin] = useState(null);
 
+
+
+  const renderModal = () => {
+    switch (selectedItem) {
+      case '1':
+        return (
+          <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+        >
+          <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+            <View
+              style={{
+                backgroundColor: "#121212",
+                padding: 20,
+                width:width-60,
+              }}
+            >
+            <TextInput
+            style={styles.input}
+            placeholder="Full Name"
+            placeholderTextColor={"#909090"}
+            onChangeText={(fullnamenew) => setFullnamenew(fullnamenew)}
+            keyboardType={"default"}
+          />
+          <View style={{flexDirection:"row"}}>
+          <TouchableOpacity onPress={()=> handleSubmit2(fullnamenew)}          
+              style={styles.button2}>
+            <Text style={styles.buttonText2}>Update</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => setModalVisible(false)}          
+              style={styles.button3}>
+            <Text style={styles.buttonText2}>Close</Text>
+              </TouchableOpacity>
+          </View>
+            </View>
+          </View>
+        </Modal>
+        );
+      case '2':
+        return (
+          <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+
+        >
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          >
+            <View
+              style={{
+                backgroundColor: "#121212",
+                padding: 20,
+                width: width - 60,
+              }}
+            >
+              <TextInput
+                placeholder="Current Email"
+                placeholderTextColor={"#909090"}
+                style={styles.input}
+                value={currentEmail}
+                onChangeText={setCurrentEmail}
+              />
+              <TextInput
+                placeholder="New Email"
+                value={newEmail}
+                placeholderTextColor={"#909090"}
+                style={styles.input}
+                onChangeText={setnewEmail}
+              />
+              <TextInput
+                secureTextEntry
+                placeholder="Current Password"
+                placeholderTextColor={"#909090"}
+                style={styles.input}
+                value={currentPassword}
+                onChangeText={setCurrentPassword}
+              />
+              <View style={{ flexDirection: "row" }}>
+                <TouchableOpacity
+                  onPress={handleChangeEmail}
+                  style={styles.button2}
+                >
+                  <Text style={styles.buttonText2}>Update</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => setModalVisible(false)}
+                  style={styles.button3}
+                >
+                  <Text style={styles.buttonText2}>Close</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+        );
+      case '3':
+        return (
+          <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+
+        >
+          <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+            <View
+              style={{
+                backgroundColor: "#121212",
+                padding: 20,
+                width:width-60,
+              }}
+            >
+            <TextInput
+            style={styles.input}
+            placeholder="Phone Number"
+            placeholderTextColor={"#909090"}
+            onChangeText={(phonenew) => setPhonenew(phonenew)}
+            keyboardType={"phone-pad"}
+            maxLength={11}
+          />
+          <View style={{flexDirection:"row"}}>
+          <TouchableOpacity onPress={()=> handleSubmit(phonenew)}          
+              style={styles.button2}>
+            <Text style={styles.buttonText2}>Update</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => setModalVisible(false)}          
+              style={styles.button3}>
+            <Text style={styles.buttonText2}>Close</Text>
+              </TouchableOpacity>
+          </View>
+            </View>
+          </View>
+        </Modal>
+        );
+      case '4':
+        return (
+          <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+        >
+          <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+            <View
+              style={{
+                backgroundColor: "#121212",
+                padding: 20,
+                width:width-60,
+              }}
+            >
+        <TextInput
+          secureTextEntry
+          placeholder="Current Password"
+          placeholderTextColor={"#909090"}
+          style={styles.input}
+          value={currentPassword}
+          onChangeText={setCurrentPassword}
+        />
+        <TextInput
+          secureTextEntry
+          placeholder="New Password"
+          value={newPassword}
+          placeholderTextColor={"#909090"}
+          style={styles.input}
+          onChangeText={setNewPassword}
+        />
+          <View style={{flexDirection:"row"}}>
+          <TouchableOpacity onPress={handleChangePassword}          
+              style={styles.button2}>
+            <Text style={styles.buttonText2}>Update</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => setModalVisible(false)}          
+              style={styles.button3}>
+            <Text style={styles.buttonText2}>Close</Text>
+              </TouchableOpacity>
+          </View>
+            </View>
+          </View>
+        </Modal>
+        );
+      default:
+        return null;
+    }
+  };
+
+
   useEffect(() => {
-    const userId = firebase.auth().currentUser.uid; 
-    const userRef = firebase.firestore().collection('users').doc(userId);
+    const userId = firebase.auth().currentUser.uid;
+    const userRef = firebase.firestore().collection("users").doc(userId);
     userRef.get().then((doc) => {
       const userData = doc.data();
       const admin = userData.admin;
@@ -56,185 +316,143 @@ export default function User({ navigation }) {
   }, []);
 
 
-  const [fullname, setFullname] = React.useState('');
-  const [phone, setPhone] = React.useState('');
-  const [adminmi, setAdminmi] = React.useState('');
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
-  const [image, setImage] = useState(null);
-  const [image2, setImage2] = useState("");
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalVisible2, setModalVisible2] = useState(false);
-  const [modalVisible3, setModalVisible3] = useState(false);
-  const [modalVisible4, setModalVisible4] = useState(false);
-  const [phonenew, setPhonenew] = useState("");
-  const [uploading, setUploading] = useState("");
-  const [emailnew, setEmailnew] = useState("");
-  const [fullnamenew, setFullnamenew] = useState("");
-  const collectionRef = firebase.firestore().collection('users').doc(userId);
-    const [currentPassword, setCurrentPassword] = useState('');
-    const [newPassword, setNewPassword] = useState('');
-    const [currentEmail, setCurrentEmail] = useState('');
-    const [newEmail, setnewEmail] = useState('');
+  useEffect(() => {
+    const collectionRef = firebase.firestore().collection('users');
+    const unsubscribe = collectionRef.onSnapshot((querySnapshot) => {
+      setDocumentCount(querySnapshot.size);
+    });
+
+    return unsubscribe;
+  }, []);
+  useEffect(() => {
+    const collectionRef2 = firebase.firestore().collection('users');
+    const unsubscribe = collectionRef2.onSnapshot((querySnapshot) => {
+      let count = 0;
+      querySnapshot.forEach((doc) => {
+        const appointmentRef = doc.ref.collection('appointment');
+        appointmentRef.get().then((subCollectionSnapshot) => {
+          count += subCollectionSnapshot.size;
+          setDocumentCount2(count);
+        });
+      });
+    });
+
+    return unsubscribe;
+  }, []);
+
   
-    const handleChangePassword = () => {
-      // Get the current user
-      const user = firebase.auth().currentUser;
-  
-      // Get the user's credentials
-      const credentials = firebase.auth.EmailAuthProvider.credential(
-        user.email,
-        currentPassword
-      );
-  
-      // Reauthenticate the user using their current credentials
-      user.reauthenticateWithCredential(credentials)
-        .then(() => {
-          // Update the user's password
-          return user.updatePassword(newPassword);
-        })
-        .then(() => {
-          // Password updated successfully
-          Alert.alert('Success', 'Password updated successfully');
-          return updateFirestorePassword();
-        })
-        .catch((error) => {
-          // Handle errors here
-          Alert.alert('Error', error.message);
-        });
-        setModalVisible4(false)
-    };
-    const handleChangeEmail = () => {
-      // Get the current user
-      const user = firebase.auth().currentUser;
-    
-      // Get the user's credentials
-      const credentials = firebase.auth.EmailAuthProvider.credential(
-        user.email,
-        currentPassword
-      );
-    
-      // Reauthenticate the user using their current credentials
-      user.reauthenticateWithCredential(credentials)
-        .then(() => {
-          // Update the user's email
-          return user.updateEmail(newEmail);
-        })
-        .then(() => {
-          // Email updated successfully
-          Alert.alert('Success', 'Email updated successfully');
-          setCurrentEmail(newEmail); // update the state with the new email
-          
-          // Update the email in Firestore
-          return updateFirestoreEmail();
-        })
-        .catch((error) => {
-          // Handle errors here
-          Alert.alert('Error', error.message);
-        })
-        .finally(() => {
-          setnewEmail(null)
-          setModalVisible3(false)
-        });
-    };
-    
-    const updateFirestoreEmail = async () => {
-      try {
-        const userId = firebase.auth().currentUser.uid;
-        const newDocRef = firebase.firestore().collection('users').doc(userId);
-        await newDocRef.update({
-          email: newEmail,
-        });
-      } catch (error) {
-        console.error('Error saving data: ', error);
-      }
-    };
-    const updateFirestorePassword = async () => {
-      try {
-        const userId = firebase.auth().currentUser.uid;
-        const newDocRef = firebase.firestore().collection('users').doc(userId);
-        await newDocRef.update({
-          password: newPassword,
-        });
-      } catch (error) {
-        console.error('Error saving data: ', error);
-      }
-    };  
-    
-    
+  const handleChangePassword = () => {
+    // Get the current user
+    const user = firebase.auth().currentUser;
+
+    // Get the user's credentials
+    const credentials = firebase.auth.EmailAuthProvider.credential(
+      user.email,
+      currentPassword
+    );
+
+    // Reauthenticate the user using their current credentials
+    user
+      .reauthenticateWithCredential(credentials)
+      .then(() => {
+        // Update the user's password
+        return user.updatePassword(newPassword);
+      })
+      .then(() => {
+        // Password updated successfully
+        Alert.alert("Success", "Password updated successfully");
+        return updateFirestorePassword();
+      })
+      .catch((error) => {
+        // Handle errors here
+        Alert.alert("Error", error.message);
+      });
+    setModalVisible(false);
+  };
+  const handleChangeEmail = () => {
+    // Get the current user
+    const user = firebase.auth().currentUser;
+
+    // Get the user's credentials
+    const credentials = firebase.auth.EmailAuthProvider.credential(
+      user.email,
+      currentPassword
+    );
+
+    // Reauthenticate the user using their current credentials
+    user
+      .reauthenticateWithCredential(credentials)
+      .then(() => {
+        // Update the user's email
+        return user.updateEmail(newEmail);
+      })
+      .then(() => {
+        // Email updated successfully
+        Alert.alert("Success", "Email updated successfully");
+        setCurrentEmail(newEmail); // update the state with the new email
+
+        // Update the email in Firestore
+        return updateFirestoreEmail();
+      })
+      .catch((error) => {
+        // Handle errors here
+        Alert.alert("Error", error.message);
+      })
+      .finally(() => {
+        setnewEmail(null);
+        setModalVisible(false);
+      });
+  };
+
+  const updateFirestoreEmail = async () => {
+    try {
+      const userId = firebase.auth().currentUser.uid;
+      const newDocRef = firebase.firestore().collection("users").doc(userId);
+      await newDocRef.update({
+        email: newEmail,
+      });
+    } catch (error) {
+      console.error("Error saving data: ", error);
+    }
+  };
+  const updateFirestorePassword = async () => {
+    try {
+      const userId = firebase.auth().currentUser.uid;
+      const newDocRef = firebase.firestore().collection("users").doc(userId);
+      await newDocRef.update({
+        password: newPassword,
+      });
+    } catch (error) {
+      console.error("Error saving data: ", error);
+    }
+  };
+
   const handleSubmit = async (phone) => {
     try {
-      setPhone(phonenew)
+      setPhone(phonenew);
+      console.log(userId)
+      const collectionRef = firebase.firestore().collection("users").doc(userId);
       await collectionRef.update({
         phone,
       });
-      setModalVisible(false)
+      setModalVisible(false);
     } catch (error) {
-      console.error('Error updating phone number:', error);
+      console.error("Error updating phone number:", error);
     }
   };
   const handleSubmit2 = async (fullname) => {
     try {
-      setFullname(fullnamenew)
+      setFullname(fullnamenew);
+      const collectionRef = firebase.firestore().collection("users").doc(userId);
       await collectionRef.update({
         fullname,
       });
-      setModalVisible2(false)
+      setModalVisible(false);
     } catch (error) {
-      console.error('Error updating phone number:', error);
+      console.error("Error updating phone number:", error);
     }
   };
 
-  useEffect(() => {
-  }, [image]);
-  const pickImage = async (image) => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
-    });
-  
-    if (!result.canceled) {
-      setUploading(true);
-      const response = await fetch(result.assets[0].uri);
-      const blob = await response.blob();
-      const filename = result.assets[0].uri.substring(
-        result.assets[0].uri.lastIndexOf("/") + 1
-      );
-  
-      var ref = firebase.storage().ref().child(filename).put(blob);
-      try {
-        await ref;
-      } catch (e) {}
-  
-      setUploading(false);
-      const downloadUrl = await firebase
-        .storage()
-        .ref()
-        .child(filename)
-        .getDownloadURL();
-  
-      const userId = firebase.auth().currentUser.uid;
-      const docRef = firebase.firestore().collection("users").doc(userId);
-  
-      docRef
-        .update({
-          image: downloadUrl, // update image with the download URL
-        })
-        .then(() => {
-          console.log("Image URL updated successfully",image);
-          setImage(downloadUrl); // set the image state after updating the database
-        })
-        .catch((error) => {
-          console.error("Error updating image URL: ", error);
-        });
-    }
-  }; 
-  const handleSignOut=()=>{
-    firebase.auth().signOut();
-
-};
 
   return (
 
@@ -278,10 +496,15 @@ export default function User({ navigation }) {
                 </ListItem.Title>
               </ListItem.Content>
             </ListItem>
-            <FullName />
-            <Email />
-            <Phone />
-            <Password />
+            <ScrollView keyboardShouldPersistTaps="always">
+            <FlatList
+  data={data}
+  renderItem={Item}
+  keyExtractor={(item) => item.id}
+  style={{ flexGrow: 1 }}
+/>
+{renderModal()}
+          </ScrollView>
           </View>
       
     
@@ -298,7 +521,7 @@ export default function User({ navigation }) {
               }}
             >
               <View style={{ width: width }}>
-                <Text style={styles.editText2}>created by: Smartist Tech</Text>
+                <Text style={styles.editText2}>²°²³</Text>
               </View>
             </View>
           </View>

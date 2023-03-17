@@ -8,6 +8,7 @@ import {
   Button,
   KeyboardAvoidingView,
   ImageBackground,
+  Dimensions,
 } from "react-native";
 import React, { useState,useEffect } from "react";
 import { firebase } from "../../config";
@@ -16,6 +17,8 @@ import { useNavigation } from '@react-navigation/core'
 import * as ImagePicker from 'expo-image-picker';
 import { MaterialIcons } from '@expo/vector-icons';
 
+const width = Dimensions.get("window").width;
+const height = Dimensions.get("window").height;
 export default function RegisterScreen({navigation}) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -64,6 +67,22 @@ export default function RegisterScreen({navigation}) {
 console.log("Image",image)
 
  const registerUser = async (email, password, fullname, phone,image,admin,barber) => {
+  if (!fullname.trim()) {
+    alert('Please Enter Name');
+    return;
+  }
+  if (!email.trim()) {
+    alert('Please Enter Email');
+    return;
+  }
+  if (!phone.trim()) {
+    alert('Please Enter Phone');
+    return;
+  }
+  if (image === null) {
+    alert('Please add an image.');
+    return;
+  }
     await firebase
       .auth()
       .createUserWithEmailAndPassword(email, password)
@@ -149,8 +168,8 @@ behavior="padding"
 
 </View>
 <View style={{backgroundColor:"#404040",width:"80%",alignItems:"center",borderRadius:10,flexDirection:"row",marginTop:20 }}>
-<Text style={{color:'#909090',textAlign:"center",fontSize:13,paddingLeft:0,fontWeight:"600",width:120}}>Choose Picture</Text>
-    <View style={{marginLeft:85}}>
+<Text style={{color:'#909090',textAlign:"center",fontSize:13,paddingLeft:0,fontWeight:"600",width: 120}}>Choose Picture</Text>
+    <View style={{marginLeft:width < 375 ? 20 : 85}}>
     <TouchableOpacity onPress={pickImage}>
         {image ? (
           <ImageBackground
@@ -203,21 +222,22 @@ const styles = StyleSheet.create({
   buttonOutlineText2: {
     color: '#eee',
     fontWeight: '700',
-    fontSize: 14,
+    fontSize: width < 375 ? 12 : 14,
   },
   input: {
     backgroundColor: '#404040',
     paddingHorizontal: 15,
     color:"#fff",
-    paddingVertical: 10,
-    borderRadius: 10,
-    marginTop: 5,
+    paddingVertical: width < 375 ? 5 : 10,
+    borderRadius: width < 375 ? 5 : 10,
+    marginTop: width < 375 ? 2 : 5,
+    height:width < 375 ? 40 : 50,
   },
   buttonContainer: {
     width: '60%',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 40,
+    marginTop: width < 375 ? 20 : 40,
   },
   button: {
     backgroundColor: '#d90',

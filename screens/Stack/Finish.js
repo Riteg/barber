@@ -42,26 +42,52 @@ export default function Finish({route, navigation }) {
   const { currentDate } = route.params;
   console.log(barberId)
   const docId = docum;
+  const userRef = firebase.firestore().collection("users").doc(userId);
+  userRef.get().then((doc) => {
+    const userData = doc.data();
+    const fullname = userData.fullname;
+    setFullname(fullname);
+    const image = userData.image;
+    setCustomerImage(image)
+  });
 
-
-
+  const [fullname, setFullname] = React.useState("");
+  const [customerimage, setCustomerImage] = React.useState("");
   const barberAppointmentsCollection = firebase.firestore().collection('users').doc(barberId).collection("Barber_Appointments");
-
-  barberAppointmentsCollection.add({
+  const [berberdoc, setberberDoc] = React.useState("");
+  const handleOkey = async () => {
+    alert("Appointment Succesfully")
+   barberAppointmentsCollection.add({
     userId: userId,
     time: time ,
     hour: hour,
     service: service,
     currentDate:currentDate,
     barber:barber,
+    customername:fullname,
+    customerimage:customerimage,
+    docId:"",
     // other appointment details
   })
   .then((docRef) => {
     console.log('Appointment added with ID:', docRef.id);
+    setberberDoc(docRef.id);
+
+    const barberAppointmentsCollection2 = firebase
+      .firestore()
+      .collection('users')
+      .doc(barberId)
+      .collection('Barber_Appointments')
+      .doc(docRef.id);
+
+    barberAppointmentsCollection2.update({ docId: docRef.id });
+
+    navigation.navigate('ChooseService');
   })
   .catch((error) => {
     console.error('Error adding appointment:', error);
   });
+}
   const barberAppointmentsQuery = barberAppointmentsCollection.where('barberId', '==', "barberId");
   
   barberAppointmentsQuery.onSnapshot((querySnapshot) => {
@@ -81,7 +107,7 @@ export default function Finish({route, navigation }) {
     <SafeAreaView style={{flex:1,backgroundColor:'#181818'}}>
       <View style={{width: width, height: height,backgroundColor: "#141414"}}>
         <View style={{flexDirection:'row',backgroundColor:"#181818",height:50,alignItems:'center',justifyContent:'space-between'}}>
-          <Text style={{color:'white',fontWeight:'700',textAlign:'center',width:width,fontSize:17,alignContent:"center"}}>Appointment Successfully</Text>
+          <Text style={{color:'white',fontWeight:'700',textAlign:'center',width:width,fontSize:17,alignContent:"center"}}>Appointment Confirmation</Text>
         </View>
         <View
         style={{
@@ -241,7 +267,7 @@ export default function Finish({route, navigation }) {
             </Text>
           </View>
         </View>
-        <TouchableOpacity style={{marginTop:0}} onPress={() => navigation.navigate("ChooseService")}>
+        <TouchableOpacity style={{marginTop:0}} onPress={handleOkey}>
           <View
             style={{
               alignItems: "center",
@@ -262,7 +288,7 @@ export default function Finish({route, navigation }) {
                 marginTop: 5,
               }}
             >
-              Back
+              Confirm Appointment
             </Text>
           </View>
         </TouchableOpacity>

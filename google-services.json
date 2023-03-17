@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "493794739289",
+    "project_id": "berber-2df5c",
+    "storage_bucket": "berber-2df5c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:493794739289:android:ba04add13f52f847211d48",
+        "android_client_info": {
+          "package_name": "com.burakvncc.berberapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "493794739289-ruetbiqgf2t30s0edtkt4us6hrs3vmuu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.burakvncc.berberapp",
+            "certificate_hash": "0e0b690ea36c7cbd9480ef52816827ee6c6e9dd7"
+          }
+        },
+        {
+          "client_id": "493794739289-ufha1tj3f99k2baknhhps7m9rm7jefq2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCdUSVfxh7Qp-QieIVcoLtpbzH7c7bAfxk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "493794739289-1mb7l7pe6kgu5to1nd35u2l0hl1e70iu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

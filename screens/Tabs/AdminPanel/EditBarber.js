@@ -77,6 +77,14 @@ export default function EditBarber({ navigation }) {
   const [admin, setAdmin] = useState("");
 
   const handleSubmit = async () => {
+    if (!berberlocation.trim()) {
+      alert('Please Enter Barber Location');
+      return;
+    }
+    if (selectedItem === null) {
+      alert('Please Add Barber Email');
+      return;
+    }
     const userRef = firebase.firestore().collection("users").doc(selectedItem);
     userRef.update({
       barber: "yes",
@@ -85,6 +93,7 @@ export default function EditBarber({ navigation }) {
     })
     .then(() => {
       console.log("Document successfully updated!");
+      alert('Barber Added Succesfully');
     })
     .catch((error) => {
       console.error("Error updating document: ");
@@ -97,6 +106,7 @@ export default function EditBarber({ navigation }) {
     })
     .then(() => {
       console.log("Document successfully updated!");
+      alert('Barber Removed Succesfully');
     })
     .catch((error) => {
       console.error("Error updating document: ");
@@ -444,7 +454,7 @@ const styles = StyleSheet.create({
   buttonText2: {
     color: '#fff',
     fontWeight: '700',
-    fontSize: 13,
+    fontSize: width < 375 ? 9 : 13,
     justifyContent:"center",
     textAlign:"center",
   },
