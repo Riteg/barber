@@ -3,7 +3,7 @@
     "name": "Vahit's Barber",
     "slug": "barber",
     "version": "1.0.2",
-    "plugins": ["@react-native-community/google-signin"],
+    "plugins": ["@react-native-google-signin/google-signin"],
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {

@@ -4,8 +4,8 @@ import {useEffect} from "react";
 import { SafeAreaView, StyleSheet, Text,Button ,Dimensions,TextInput,Image, TouchableOpacity, View } from 'react-native'
 import { auth } from '../../firebase'
 import { useState } from 'react';
-import { GoogleSignin } from '@react-native-community/google-signin';
-import { GoogleSigninButton } from '@react-native-community/google-signin';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { GoogleSigninButton } from '@react-native-google-signin/google-signin/lib/typescript/src/GoogleSigninButton';
 const width = Dimensions.get("window").width;
 const height = Dimensions.get("window").height;
 
