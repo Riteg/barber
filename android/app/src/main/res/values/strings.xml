@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">VahitsBarber</string>
+    <string name="facebook_app_id">VahitsBarber</string>
 </resources>
