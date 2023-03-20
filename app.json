@@ -36,6 +36,7 @@
         "backgroundColor": "#181818"
       },
       "package": "com.burakvncc.berberapp",
+      "permissions": ["READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE", "NOTIFICATIONS"],
       "runtimeVersion": {
         "policy": "sdkVersion"
       }
