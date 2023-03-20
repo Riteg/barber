@@ -3,7 +3,8 @@
     "name": "VahitsBarber",
     "slug": "barber",
     "version": "1.0.3",
-    "scheme":"com.burakvncc.berberapp",
+    "runtimeVersion": "1.0.3",
+    "scheme": "com.burakvncc.berberapp",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -12,14 +13,18 @@
       "backgroundColor": "#181818"
     },
     "updates": {
-      "fallbackToCacheTimeout": 0
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/2fb13b6d-399f-4d2a-8b66-e211ca71e4e1"
     },
     "assetBundlePatterns": [
       "**/**/*"
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier":"com.burakvncc.berberapp"
+      "bundleIdentifier": "com.burakvncc.berberapp",
+      "runtimeVersion": {
+        "policy": "sdkVersion"
+      }
     },
     "android": {
       "googleServicesFile": "./google-services.json",
@@ -27,7 +32,8 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#181818"
       },
-      "package": "com.burakvncc.berberapp"
+      "package": "com.burakvncc.berberapp",
+      "runtimeVersion": "1.0.0"
     },
     "web": {
       "favicon": "./assets/favicon.png"
