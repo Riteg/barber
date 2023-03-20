@@ -3,9 +3,7 @@
     "name": "VahitsBarber",
     "slug": "barber",
     "version": "1.0.3",
-    "runtimeVersion": {
-      "policy": "sdkVersion"
-    },
+    "runtimeVersion": "1.0.3",
     "scheme": "com.burakvncc.berberapp",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -25,11 +23,10 @@
       
       "supportsTablet": true,
       "bundleIdentifier": "com.burakvncc.berberapp",
-      "runtimeVersion": {
-        "policy": "sdkVersion"
-      }
+      "runtimeVersion": "1.0.3"
     },
     "android": {
+      "versionCode": 1,
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
@@ -37,9 +34,7 @@
       },
       "package": "com.burakvncc.berberapp",
       "permissions": ["READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE", "NOTIFICATIONS"],
-      "runtimeVersion": {
-        "policy": "sdkVersion"
-      }
+      "runtimeVersion": "1.0.3"
     },
     "web": {
       "favicon": "./assets/favicon.png"
