@@ -1,9 +1,9 @@
 {
   "expo": {
-    "name": "Vahit's Barber",
+    "name": "VahitsBarber",
     "slug": "barber",
-    "version": "1.0.2",
-    "plugins": ["@react-native-google-signin/google-signin"],
+    "version": "1.0.3",
+    "scheme":"com.burakvncc.berberapp",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -18,7 +18,8 @@
       "**/**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier":"com.burakvncc.berberapp"
     },
     "android": {
       "googleServicesFile": "./google-services.json",

@@ -20,19 +20,97 @@ import { CheckBox } from "@rneui/themed/dist/CheckBox";
 import { FlatList } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { firebase } from "../../config";
+import {
+  AntDesign,
+  Ionicons,
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
+import * as Device from 'expo-device';
+import * as Notifications from 'expo-notifications';
 
 const width = Dimensions.get("window").width;
 const height = Dimensions.get("window").height;
 const { width: screenWidth } = Dimensions.get("window");
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
+
+
+
+async function registerForPushNotificationsAsync() {
+  let token;
+  if (Device.isDevice) {
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+    if (finalStatus !== 'granted') {
+      alert('Failed to get push token for push notification!');
+      return;
+    }
+    token = (await Notifications.getExpoPushTokenAsync()).data;
+    console.log("31",token);
+  } else {
+    alert('Must use physical device for Push Notifications');
+  }
+
+  if (Platform.OS === 'android') {
+    Notifications.setNotificationChannelAsync('default', {
+      name: 'default',
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#FF231F7C',
+    });
+  }
+
+  return token;
+}
+
 export default function ChooseService({ props, navigation }) {
+  const [expoPushToken, setExpoPushToken] = useState('');
+  const [notification, setNotification] = useState(false);
+  const notificationListener = useRef();
+  const responseListener = useRef();
+
+  useEffect(() => {
+    registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
+    console.log("33",expoPushToken)
+    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+      setNotification(notification);
+    });
+
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+      console.log("31",response);
+    });
+
+    return () => {
+      Notifications.removeNotificationSubscription(notificationListener.current);
+      Notifications.removeNotificationSubscription(responseListener.current);
+    };
+  }, []);
+
+
+
+
+
+
   const [status, setStatus] = useState("");
   const [barbers, setBarbers] = useState("");
 
   useEffect(() => {
+    const userId = firebase.auth().currentUser.uid;
     const userRef = firebase.firestore().collection("users").doc(userId);
     userRef
       .update({
         userId,
+        expoPushToken:expoPushToken
       })
       .then(() => {
         console.log("Document successfully updated!");
@@ -67,20 +145,35 @@ export default function ChooseService({ props, navigation }) {
     });
 
   const handleSubmit = async () => {
-    try {
-      const newDocRef = collectionRef.doc();
-
-      await newDocRef.set({
-        service,
-      });
-
-      console.log("Data saved successfully with ID:", newDocRef.id);
-      const docum = newDocRef.id;
-      navigation.navigate("ChooseBarber", { docum, service });
-    } catch (error) {
-      console.error("Error saving data: ", error);
+    const newDocRef = collectionRef.doc();
+    const formatted = await formattedServices;
+    console.log("formattedServices:", formatted);
+    if (!formatted.trim()) {
+      alert("Please Select Service");
+      return;
     }
+    newDocRef
+      .set({
+        formatted,
+        totalLocation,
+      })
+      .then(() => {
+        console.log("Data saved successfully with ID:", newDocRef.id);
+        const docum = newDocRef.id;
+        navigation.navigate("ChooseBarber", {
+          docum,
+          service: formatted,
+          totalLocation,
+          expoPushToken,
+        });
+      })
+      .then(() => {
+        setSelectedItems([]);
+        setTotalLocation(0);
+      })
+      .catch((error) => console.error("Error saving data: ", error));
   };
+
   const [service, setService] = useState("");
   const [ilac, setIlac] = useState("");
   const [tanim, setTanim] = useState("");
@@ -116,32 +209,57 @@ export default function ChooseService({ props, navigation }) {
   const [selected, setSelected] = useState(0);
   const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
   const [check3, setCheck3] = useState(false);
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [totalLocation, setTotalLocation] = useState(0);
+  const selectedServices = [
+    ...new Set(selectedItems.map((item) => selectedItems.toString())),
+  ];
+  const formattedServices = selectedServices.join(", "); // using comma as delimiter
+  const [selectedItemsLocationSum, setSelectedItemsLocationSum] = useState();
+
   function Item(props) {
+    const handleSelect = () => {
+      if (selectedItems.includes(props.item.name)) {
+        setSelectedItems(
+          selectedItems.filter((item) => item !== props.item.name)
+        );
+        setTotalLocation(Number(totalLocation) - Number(props.item.location));
+      } else {
+        setSelectedItems([...selectedItems, props.item.name]);
+        setTotalLocation(Number(totalLocation) + Number(props.item.location));
+      }
+    };
+
     return (
-      <View style={{ flexDirection: "row", padding: 7, width: screenWidth }}>
+      <View style={{ flexDirection: "row", padding: 7, width: width }}>
         <Image style={styles.serviceimg} source={{ uri: props.item.imgUrl }} />
         <View style={styles.item}>
           <Text style={{ color: "#fff" }}>{props.item.name}</Text>
           <Text style={{ color: "#fff" }}>{props.item.location} mins</Text>
         </View>
         <TouchableOpacity
-          onPress={handleSubmit}
-          onPressIn={(service) => setService(props.item.name)}
+          onPress={handleSelect}
           style={{
-            backgroundColor: "#181818",
+            backgroundColor: selectedItems.includes(props.item.name)
+              ? "#DF2E38"
+              : "#539165",
             marginLeft: 10,
-            width: 80,
+            width: "25%",
             height: 80,
+            borderRadius: 10,
             justifyContent: "center",
             alignSelf: "flex-end",
-            marginRight: 30,
+            marginRight: 5,
           }}
         >
-          <Text style={{ textAlign: "center", color: "#fefefe" }}>Select</Text>
+          <Text style={{ textAlign: "center", color: "#fefefe" }}>
+            {selectedItems.includes(props.item.name) ? "Remove" : "Select"}
+          </Text>
         </TouchableOpacity>
       </View>
     );
   }
+
   const [refreshing, setRefreshing] = useState(false);
 
   function onRefresh() {
@@ -208,6 +326,52 @@ export default function ChooseService({ props, navigation }) {
             </View>
             <Text style={styles.barberbutton2}>Choose Service</Text>
             <FlatList ref={carouselRef} data={filteredList} renderItem={Item} />
+            <View
+              style={{
+                flexDirection: "row",
+                width: width,
+                alignItems: "center",
+                backgroundColor: "#141414",
+                borderTopLeftRadius: 25,
+                borderTopRightRadius: 25,
+              }}
+            >
+              <View
+                style={{
+                  flexDirection: "column",
+                  width: width / 2,
+                  backgroundColor: "#161616",
+                  borderTopLeftRadius: 25,
+                }}
+              >
+                <Text style={styles.barberbutton3}>
+                  <Ionicons
+                    name="cut"
+                    style={{ marginRight: 15, marginLeft: 15 }}
+                    size={24}
+                    color="white"
+                  />
+                </Text>
+                <Text style={styles.barberbutton3}>
+                  {" "}
+                  {formattedServices ? formattedServices : "Empty"}
+                </Text>
+              </View>
+              <View style={{ flexDirection: "column", width: width / 2 }}>
+                <Text style={styles.barberbutton3}>
+                  <MaterialCommunityIcons
+                    name="timetable"
+                    style={{ marginRight: 15, marginLeft: 15 }}
+                    size={24}
+                    color="white"
+                  />
+                </Text>
+                <Text style={styles.barberbutton3}> {totalLocation} mins</Text>
+              </View>
+            </View>
+            <TouchableOpacity style={styles.button2} onPress={handleSubmit}>
+              <Text style={styles.barberbutton2}>Next</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </SafeAreaView>
@@ -219,8 +383,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    padding: 8,
     marginBottom: 50,
+    width: width,
   },
   list: {
     height: "100%",
@@ -239,7 +403,7 @@ const styles = StyleSheet.create({
   },
   serviceimg: {
     height: 75,
-    width: 100,
+    width: 125,
     alignItems: "flex-start",
     alignContent: "flex-start",
     justifyContent: "flex-start",
@@ -257,14 +421,30 @@ const styles = StyleSheet.create({
     width: width / 2,
     backgroundColor: "#181818",
   },
+  button2: {
+    justifyContent: "center",
+    alignContent: "center",
+    alignItems: "center",
+    alignSelf: "center",
+    width: width,
+    height: 50,
+    backgroundColor: "#d90",
+  },
   barberbutton2: {
     textAlign: "center",
     marginVertical: 10,
     color: "#fff",
   },
+  barberbutton3: {
+    textAlign: "center",
+    marginVertical: 8,
+    marginLeft: 20,
+    color: "#fff",
+  },
   filterBar: {
     flexDirection: "row",
     // flex: 0.2,
+    width: width,
     height: 100,
     color: "white",
   },
@@ -272,6 +452,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     padding: 8,
+    width: "75%",
     alignContent: "center",
     backgroundColor: "#181818",
     color: "white",

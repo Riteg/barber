@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "493794739289-codbee0prp7s5r371uuijhm9jov2v3lo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.burakvncc.berberapp",
+            "certificate_hash": "d1ac8c79730587d487e0968f13a7c68418a0ae26"
+          }
+        },
+        {
           "client_id": "493794739289-g9blmtfu0fcubafjcdsvmivg6c6uallp.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -45,6 +53,13 @@
             {
               "client_id": "493794739289-1mb7l7pe6kgu5to1nd35u2l0hl1e70iu.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "493794739289-hu7rslrgnhbjc1lb9juah81t356hpvmi.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.burakvncc.berberapp"
+              }
             }
           ]
         }

@@ -1,5 +1,15 @@
-import {View,SafeAreaView, Dimensions,Modal,TouchableHighlight,TouchableOpacity,StyleSheet,TextInput,FlatList,} from "react-native";
-import React, { useEffect, useState } from "react";
+import {
+  View,
+  SafeAreaView,
+  Dimensions,
+  Modal,
+  TouchableHighlight,
+  TouchableOpacity,
+  StyleSheet,
+  TextInput,
+  FlatList,
+} from "react-native";
+import React, { useEffect, useState,useRef } from "react";
 import { auth } from "../../firebase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Tab, Text, TabView, ListItem, Avatar, Image } from "@rneui/themed";
@@ -11,10 +21,28 @@ import EditBarber from "./AdminPanel/EditBarber";
 import EditAdmin from "./AdminPanel/EditAdmin";
 import EditService from "./AdminPanel/EditService";
 import ProfilePicture from "./Profile/ProfilePicture";
+import {Button, Platform } from 'react-native';
+import * as Device from 'expo-device';
+import * as Notifications from 'expo-notifications';
+
 
 const width = Dimensions.get("window").width;
 const height = Dimensions.get("window").height;
+
+
+
 export default function Admin({ navigation }) {
+
+
+
+
+
+
+
+
+
+
+
 
 
   function Item(props) {
@@ -25,30 +53,55 @@ export default function Admin({ navigation }) {
         onPressIn={() => setSelectedItem(item.id)}
         onPress={() => setModalVisible(true)}
       >
-      <View style={{flex:1,width:width}}>
-        <ListItem containerStyle={{ backgroundColor: index === 0 ? "#161616" : index === 1 ? "#181818" : index === 2 ? "#161616" : index === 3 ? "#181818" : "",height:width < 375 ? 49 : 75 }}>
-          <ListItem.Content>
-            <ListItem.Title style={{ color: "#9f9f9f" ,fontSize: width < 375 ? 12 : 24}}>
-              {item.title}
-            </ListItem.Title>
-            <ListItem.Subtitle style={{ color: "#fafafa" ,fontSize: width < 375 ? 11 : 24}}>
-              {index === 0 ? fullname : index === 1 ? currentEmail : index === 2 ? phone : index === 3 ? "****" : ""}
-            </ListItem.Subtitle>
-          </ListItem.Content>
-          <ListItem.Chevron color="white" />
-        </ListItem>
+        <View style={{ flex: 1, width: width }}>
+          <ListItem
+            containerStyle={{
+              backgroundColor:
+                index === 0
+                  ? "#161616"
+                  : index === 1
+                  ? "#181818"
+                  : index === 2
+                  ? "#161616"
+                  : index === 3
+                  ? "#181818"
+                  : "",
+              height: width < 375 ? 49 : 75,
+            }}
+          >
+            <ListItem.Content>
+              <ListItem.Title
+                style={{ color: "#9f9f9f", fontSize: width < 375 ? 12 : 24 }}
+              >
+                {item.title}
+              </ListItem.Title>
+              <ListItem.Subtitle
+                style={{ color: "#fafafa", fontSize: width < 375 ? 11 : 24 }}
+              >
+                {index === 0
+                  ? fullname
+                  : index === 1
+                  ? currentEmail
+                  : index === 2
+                  ? phone
+                  : index === 3
+                  ? "****"
+                  : ""}
+              </ListItem.Subtitle>
+            </ListItem.Content>
+            <ListItem.Chevron color="white" />
+          </ListItem>
         </View>
       </TouchableHighlight>
     );
   }
-  
-  const data = [
-    { id: '1', title: 'FullName'},
-    { id: '2', title: 'Email' },
-    { id: '3', title: 'Phone'},
-    { id: '4', title: 'Password'},
-  ];
 
+  const data = [
+    { id: "1", title: "FullName" },
+    { id: "2", title: "Email" },
+    { id: "3", title: "Phone" },
+    { id: "4", title: "Password" },
+  ];
 
   const [modalVisible, setModalVisible] = useState("");
   const [selectedItem, setSelectedItem] = useState(null);
@@ -78,7 +131,6 @@ export default function Admin({ navigation }) {
   const userId = firebase.auth().currentUser.uid;
   const userRef = firebase.firestore().collection("users").doc(userId);
 
-
   userRef.get().then((doc) => {
     const userData = doc.data();
     const fullname = userData.fullname;
@@ -96,192 +148,221 @@ export default function Admin({ navigation }) {
   let adminValue = null;
   const [admin, setAdmin] = useState(null);
 
-
-
   const renderModal = () => {
     switch (selectedItem) {
-      case '1':
+      case "1":
         return (
           <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-        >
-          <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-            <View
-              style={{
-                backgroundColor: "#121212",
-                padding: 20,
-                width:width-60,
-              }}
-            >
-            <TextInput
-            style={styles.input}
-            placeholder="Full Name"
-            placeholderTextColor={"#909090"}
-            onChangeText={(fullnamenew) => setFullnamenew(fullnamenew)}
-            keyboardType={"default"}
-          />
-          <View style={{flexDirection:"row"}}>
-          <TouchableOpacity onPress={()=> handleSubmit2(fullnamenew)}          
-              style={styles.button2}>
-            <Text style={styles.buttonText2}>Update</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => setModalVisible(false)}          
-              style={styles.button3}>
-            <Text style={styles.buttonText2}>Close</Text>
-              </TouchableOpacity>
-          </View>
-            </View>
-          </View>
-        </Modal>
-        );
-      case '2':
-        return (
-          <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-
-        >
-          <View
-            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
           >
             <View
               style={{
-                backgroundColor: "#121212",
-                padding: 20,
-                width: width - 60,
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
               }}
             >
-              <TextInput
-                placeholder="Current Email"
-                placeholderTextColor={"#909090"}
-                style={styles.input}
-                value={currentEmail}
-                onChangeText={setCurrentEmail}
-              />
-              <TextInput
-                placeholder="New Email"
-                value={newEmail}
-                placeholderTextColor={"#909090"}
-                style={styles.input}
-                onChangeText={setnewEmail}
-              />
-              <TextInput
-                secureTextEntry
-                placeholder="Current Password"
-                placeholderTextColor={"#909090"}
-                style={styles.input}
-                value={currentPassword}
-                onChangeText={setCurrentPassword}
-              />
-              <View style={{ flexDirection: "row" }}>
-                <TouchableOpacity
-                  onPress={handleChangeEmail}
-                  style={styles.button2}
-                >
-                  <Text style={styles.buttonText2}>Update</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => setModalVisible(false)}
-                  style={styles.button3}
-                >
-                  <Text style={styles.buttonText2}>Close</Text>
-                </TouchableOpacity>
+              <View
+                style={{
+                  backgroundColor: "#121212",
+                  padding: 20,
+                  width: width - 60,
+                }}
+              >
+                <TextInput
+                  style={styles.input}
+                  placeholder="Full Name"
+                  placeholderTextColor={"#909090"}
+                  onChangeText={(fullnamenew) => setFullnamenew(fullnamenew)}
+                  keyboardType={"default"}
+                />
+                <View style={{ flexDirection: "row" }}>
+                  <TouchableOpacity
+                    onPress={() => handleSubmit2(fullnamenew)}
+                    style={styles.button2}
+                  >
+                    <Text style={styles.buttonText2}>Update</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => setModalVisible(false)}
+                    style={styles.button3}
+                  >
+                    <Text style={styles.buttonText2}>Close</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
-          </View>
-        </Modal>
+          </Modal>
         );
-      case '3':
+      case "2":
         return (
           <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-
-        >
-          <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
+          >
             <View
               style={{
-                backgroundColor: "#121212",
-                padding: 20,
-                width:width-60,
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
               }}
             >
-            <TextInput
-            style={styles.input}
-            placeholder="Phone Number"
-            placeholderTextColor={"#909090"}
-            onChangeText={(phonenew) => setPhonenew(phonenew)}
-            keyboardType={"phone-pad"}
-            maxLength={11}
-          />
-          <View style={{flexDirection:"row"}}>
-          <TouchableOpacity onPress={()=> handleSubmit(phonenew)}          
-              style={styles.button2}>
-            <Text style={styles.buttonText2}>Update</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => setModalVisible(false)}          
-              style={styles.button3}>
-            <Text style={styles.buttonText2}>Close</Text>
-              </TouchableOpacity>
-          </View>
+              <View
+                style={{
+                  backgroundColor: "#121212",
+                  padding: 20,
+                  width: width - 60,
+                }}
+              >
+                <TextInput
+                  placeholder="Current Email"
+                  placeholderTextColor={"#909090"}
+                  style={styles.input}
+                  value={currentEmail}
+                  onChangeText={setCurrentEmail}
+                />
+                <TextInput
+                  placeholder="New Email"
+                  value={newEmail}
+                  placeholderTextColor={"#909090"}
+                  style={styles.input}
+                  onChangeText={setnewEmail}
+                />
+                <TextInput
+                  secureTextEntry
+                  placeholder="Current Password"
+                  placeholderTextColor={"#909090"}
+                  style={styles.input}
+                  value={currentPassword}
+                  onChangeText={setCurrentPassword}
+                />
+                <View style={{ flexDirection: "row" }}>
+                  <TouchableOpacity
+                    onPress={handleChangeEmail}
+                    style={styles.button2}
+                  >
+                    <Text style={styles.buttonText2}>Update</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => setModalVisible(false)}
+                    style={styles.button3}
+                  >
+                    <Text style={styles.buttonText2}>Close</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
             </View>
-          </View>
-        </Modal>
+          </Modal>
         );
-      case '4':
+      case "3":
         return (
           <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-        >
-          <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
+          >
             <View
               style={{
-                backgroundColor: "#121212",
-                padding: 20,
-                width:width-60,
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
               }}
             >
-        <TextInput
-          secureTextEntry
-          placeholder="Current Password"
-          placeholderTextColor={"#909090"}
-          style={styles.input}
-          value={currentPassword}
-          onChangeText={setCurrentPassword}
-        />
-        <TextInput
-          secureTextEntry
-          placeholder="New Password"
-          value={newPassword}
-          placeholderTextColor={"#909090"}
-          style={styles.input}
-          onChangeText={setNewPassword}
-        />
-          <View style={{flexDirection:"row"}}>
-          <TouchableOpacity onPress={handleChangePassword}          
-              style={styles.button2}>
-            <Text style={styles.buttonText2}>Update</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => setModalVisible(false)}          
-              style={styles.button3}>
-            <Text style={styles.buttonText2}>Close</Text>
-              </TouchableOpacity>
-          </View>
+              <View
+                style={{
+                  backgroundColor: "#121212",
+                  padding: 20,
+                  width: width - 60,
+                }}
+              >
+                <TextInput
+                  style={styles.input}
+                  placeholder="Phone Number"
+                  placeholderTextColor={"#909090"}
+                  onChangeText={(phonenew) => setPhonenew(phonenew)}
+                  keyboardType={"phone-pad"}
+                  maxLength={11}
+                />
+                <View style={{ flexDirection: "row" }}>
+                  <TouchableOpacity
+                    onPress={() => handleSubmit(phonenew)}
+                    style={styles.button2}
+                  >
+                    <Text style={styles.buttonText2}>Update</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => setModalVisible(false)}
+                    style={styles.button3}
+                  >
+                    <Text style={styles.buttonText2}>Close</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
             </View>
-          </View>
-        </Modal>
+          </Modal>
+        );
+      case "4":
+        return (
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
+          >
+            <View
+              style={{
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <View
+                style={{
+                  backgroundColor: "#121212",
+                  padding: 20,
+                  width: width - 60,
+                }}
+              >
+                <TextInput
+                  secureTextEntry
+                  placeholder="Current Password"
+                  placeholderTextColor={"#909090"}
+                  style={styles.input}
+                  value={currentPassword}
+                  onChangeText={setCurrentPassword}
+                />
+                <TextInput
+                  secureTextEntry
+                  placeholder="New Password"
+                  value={newPassword}
+                  placeholderTextColor={"#909090"}
+                  style={styles.input}
+                  onChangeText={setNewPassword}
+                />
+                <View style={{ flexDirection: "row" }}>
+                  <TouchableOpacity
+                    onPress={handleChangePassword}
+                    style={styles.button2}
+                  >
+                    <Text style={styles.buttonText2}>Update</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => setModalVisible(false)}
+                    style={styles.button3}
+                  >
+                    <Text style={styles.buttonText2}>Close</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </Modal>
         );
       default:
         return null;
     }
   };
-
 
   useEffect(() => {
     const userId = firebase.auth().currentUser.uid;
@@ -294,9 +375,8 @@ export default function Admin({ navigation }) {
     });
   }, []);
 
-
   useEffect(() => {
-    const collectionRef = firebase.firestore().collection('users');
+    const collectionRef = firebase.firestore().collection("users");
     const unsubscribe = collectionRef.onSnapshot((querySnapshot) => {
       setDocumentCount(querySnapshot.size);
     });
@@ -304,7 +384,7 @@ export default function Admin({ navigation }) {
     return unsubscribe;
   }, []);
   useEffect(() => {
-    const collectionRef = firebase.firestore().collection('services');
+    const collectionRef = firebase.firestore().collection("services");
     const unsubscribe = collectionRef.onSnapshot((querySnapshot) => {
       setServicesCount(querySnapshot.size);
     });
@@ -313,7 +393,10 @@ export default function Admin({ navigation }) {
   }, []);
 
   useEffect(() => {
-    const collectionRef = firebase.firestore().collection('users').where("barber","==","yes");
+    const collectionRef = firebase
+      .firestore()
+      .collection("users")
+      .where("barber", "==", "yes");
     const unsubscribe = collectionRef.onSnapshot((querySnapshot) => {
       setBarberCount(querySnapshot.size);
     });
@@ -321,7 +404,10 @@ export default function Admin({ navigation }) {
     return unsubscribe;
   }, []);
   useEffect(() => {
-    const collectionRef = firebase.firestore().collection('users').where("admin","==","evet");
+    const collectionRef = firebase
+      .firestore()
+      .collection("users")
+      .where("admin", "==", "evet");
     const unsubscribe = collectionRef.onSnapshot((querySnapshot) => {
       setAdminCount(querySnapshot.size);
     });
@@ -329,11 +415,11 @@ export default function Admin({ navigation }) {
     return unsubscribe;
   }, []);
   useEffect(() => {
-    const collectionRef2 = firebase.firestore().collection('users');
+    const collectionRef2 = firebase.firestore().collection("users");
     const unsubscribe = collectionRef2.onSnapshot((querySnapshot) => {
       let count = 0;
       querySnapshot.forEach((doc) => {
-        const appointmentRef = doc.ref.collection('appointment');
+        const appointmentRef = doc.ref.collection("appointment");
         appointmentRef.get().then((subCollectionSnapshot) => {
           count += subCollectionSnapshot.size;
           setDocumentCount2(count);
@@ -344,11 +430,13 @@ export default function Admin({ navigation }) {
     return unsubscribe;
   }, []);
   useEffect(() => {
-    const collectionRef2 = firebase.firestore().collection('users');
+    const collectionRef2 = firebase.firestore().collection("users");
     const unsubscribe = collectionRef2.onSnapshot((querySnapshot) => {
       let count = 0;
       querySnapshot.forEach((doc) => {
-        const appointmentRef = doc.ref.collection('Barber_Accepted_Appointments');
+        const appointmentRef = doc.ref.collection(
+          "Barber_Accepted_Appointments"
+        );
         appointmentRef.get().then((subCollectionSnapshot) => {
           count += subCollectionSnapshot.size;
           setAcceptedapps(count);
@@ -358,7 +446,7 @@ export default function Admin({ navigation }) {
 
     return unsubscribe;
   }, []);
-  
+
   const handleChangePassword = () => {
     // Get the current user
     const user = firebase.auth().currentUser;
@@ -448,8 +536,11 @@ export default function Admin({ navigation }) {
   const handleSubmit = async (phone) => {
     try {
       setPhone(phonenew);
-      console.log(userId)
-      const collectionRef = firebase.firestore().collection("users").doc(userId);
+      console.log(userId);
+      const collectionRef = firebase
+        .firestore()
+        .collection("users")
+        .doc(userId);
       await collectionRef.update({
         phone,
       });
@@ -461,7 +552,10 @@ export default function Admin({ navigation }) {
   const handleSubmit2 = async (fullname) => {
     try {
       setFullname(fullnamenew);
-      const collectionRef = firebase.firestore().collection("users").doc(userId);
+      const collectionRef = firebase
+        .firestore()
+        .collection("users")
+        .doc(userId);
       await collectionRef.update({
         fullname,
       });
@@ -470,8 +564,6 @@ export default function Admin({ navigation }) {
       console.error("Error updating phone number:", error);
     }
   };
-
-
 
   return (
     <SafeAreaView>
@@ -501,7 +593,12 @@ export default function Admin({ navigation }) {
       </View>
       <Tab
         value={index}
-        containerStyle={{ height: 50, backgroundColor: "#161616",borderTopColor:"#999",borderTopWidth:0.2 }}
+        containerStyle={{
+          height: 50,
+          backgroundColor: "#161616",
+          borderTopColor: "#999",
+          borderTopWidth: 0.2,
+        }}
         onChange={(e) => setIndex(e)}
         indicatorStyle={{
           backgroundColor: "white",
@@ -534,11 +631,11 @@ export default function Admin({ navigation }) {
               </ListItem.Content>
             </ListItem>
             <FlatList
-  data={data}
-  renderItem={Item}
-  keyExtractor={(item) => item.id}
-  style={{ flexGrow: 1 }}
-/>
+              data={data}
+              renderItem={Item}
+              keyExtractor={(item) => item.id}
+              style={{ flexGrow: 1 }}
+            />
             {renderModal()}
           </View>
         </TabView.Item>
@@ -553,7 +650,9 @@ export default function Admin({ navigation }) {
                 top: height - 180,
               }}
             >
+            
               <View style={{ width: width }}>
+              
                 <Text style={styles.editText2}>²°²³</Text>
               </View>
             </View>
@@ -567,45 +666,93 @@ export default function Admin({ navigation }) {
             <EditBarber />
             <EditService />
             <View style={{ flexDirection: "row", marginTop: 20 }}>
-            <TouchableHighlight onPress={() => console.log('Total Customer pressed')}>
-              <View style={{ width: width / 2,height:60,justifyContent:"center" }}>
-                <Text style={styles.editText}>Total Customer</Text>
-                <Text style={styles.editText}>{documentCount}</Text>
-              </View>
+              <TouchableHighlight
+                onPress={() => console.log("Total Customer pressed")}
+              >
+                <View
+                  style={{
+                    width: width / 2,
+                    height: 60,
+                    justifyContent: "center",
+                  }}
+                >
+                  <Text style={styles.editText}>Total Customer</Text>
+                  <Text style={styles.editText}>{documentCount}</Text>
+                </View>
               </TouchableHighlight>
-              <TouchableHighlight onPress={() => console.log('Total Appointments pressed')}>
-              <View style={{ width: width / 2,height:60,justifyContent:"center" }}>
-                <Text style={styles.editText}>Total Appointment</Text>
-                <Text style={styles.editText}>{documentCount2}</Text>
-              </View>
+              <TouchableHighlight
+                onPress={() => console.log("Total Appointments pressed")}
+              >
+                <View
+                  style={{
+                    width: width / 2,
+                    height: 60,
+                    justifyContent: "center",
+                  }}
+                >
+                  <Text style={styles.editText}>Total Appointment</Text>
+                  <Text style={styles.editText}>{documentCount2}</Text>
+                </View>
               </TouchableHighlight>
             </View>
             <View style={{ flexDirection: "row", marginTop: 30 }}>
-            <TouchableHighlight onPress={() => console.log('Total Services pressed')}>
-              <View style={{ width: width / 2,height:60,justifyContent:"center" }}>
-                <Text style={styles.editText}>Total Services</Text>
-                <Text style={styles.editText}>{servicescount}</Text>
-              </View>
+              <TouchableHighlight
+                onPress={() => console.log("Total Services pressed")}
+              >
+                <View
+                  style={{
+                    width: width / 2,
+                    height: 60,
+                    justifyContent: "center",
+                  }}
+                >
+                  <Text style={styles.editText}>Total Services</Text>
+                  <Text style={styles.editText}>{servicescount}</Text>
+                </View>
               </TouchableHighlight>
-              <TouchableHighlight onPress={() => console.log('Total Barbers pressed')}>
-              <View style={{ width: width / 2,height:60,justifyContent:"center" }}>
-                <Text style={styles.editText}>Total Barbers</Text>
-                <Text style={styles.editText}>{barbercount}</Text>
-              </View>
+              <TouchableHighlight
+                onPress={() => console.log("Total Barbers pressed")}
+              >
+                <View
+                  style={{
+                    width: width / 2,
+                    height: 60,
+                    justifyContent: "center",
+                  }}
+                >
+                  <Text style={styles.editText}>Total Barbers</Text>
+                  <Text style={styles.editText}>{barbercount}</Text>
+                </View>
               </TouchableHighlight>
             </View>
             <View style={{ flexDirection: "row", marginTop: 30 }}>
-            <TouchableHighlight onPress={() => console.log('Total Admins pressed')}>
-              <View style={{ width: width / 2,height:60,justifyContent:"center" }}>
-                <Text style={styles.editText}>Total Admins</Text>
-                <Text style={styles.editText}>{admincount}</Text>
-              </View>
+              <TouchableHighlight
+                onPress={() => console.log("Total Admins pressed")}
+              >
+                <View
+                  style={{
+                    width: width / 2,
+                    height: 60,
+                    justifyContent: "center",
+                  }}
+                >
+                  <Text style={styles.editText}>Total Admins</Text>
+                  <Text style={styles.editText}>{admincount}</Text>
+                </View>
               </TouchableHighlight>
-              <TouchableHighlight onPress={() => console.log('Total Barbers pressed')}>
-              <View style={{ width: width / 2,height:60,justifyContent:"center" }}>
-                <Text style={styles.editText}>Total Accepted Apps.</Text>
-                <Text style={styles.editText}>{acceptedapps}</Text>
-              </View>
+              <TouchableHighlight
+                onPress={() => console.log("Total Barbers pressed")}
+              >
+                <View
+                  style={{
+                    width: width / 2,
+                    height: 60,
+                    justifyContent: "center",
+                  }}
+                >
+                  <Text style={styles.editText}>Total Accepted Apps.</Text>
+                  <Text style={styles.editText}>{acceptedapps}</Text>
+                </View>
               </TouchableHighlight>
             </View>
             <View

@@ -6,37 +6,73 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
-  TextInput,TouchableHighlight,
+  TextInput,
+  TouchableHighlight,
   ScrollView,
   ViewComponent,
 } from "react-native";
 import React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { firebase } from "../../config";
-import { AntDesign, Ionicons } from "@expo/vector-icons";
+import {
+  AntDesign,
+  Ionicons,
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
 import { Tab, Text, TabView, ListItem, Avatar, Image } from "@rneui/themed";
+import Appointments from "./Appointments";
+import CustomerAppointments from "./CustomerAppointments";
+import * as Permissions from 'expo-permissions';
+import * as Notifications from 'expo-notifications';
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
 
 const width = Dimensions.get("window").width;
 const height = Dimensions.get("window").height;
 
 export default function History({ navigation }) {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   const handleDelete = async (docId) => {
     try {
-      const docRef = firebase.firestore().collection("users").doc(userId).collection("Barber_Appointments").doc(docId);
+      const docRef = firebase
+        .firestore()
+        .collection("users")
+        .doc(userId)
+        .collection("Barber_Appointments")
+        .doc(docId);
       await docRef.delete();
       alert("Appointment Declined Successfully!");
     } catch (error) {
       console.error("Error removing document: ", error);
     }
-  }
-
+  };
 
   useEffect(() => {
     const unsubscribe = firebase
       .firestore()
       .collection("users")
       .doc(userId)
-      .collection("appointment")
+      .collection("User_Accepted_Appointments")
       .orderBy("currentDate", "desc")
       .onSnapshot((querySnapshot) => {
         const userData = [];
@@ -58,14 +94,21 @@ export default function History({ navigation }) {
   const [acceptedhour, setAcceptedHour] = useState("");
   const [acceptedservice, setAcceptedService] = useState("");
   const [accepteddoc, setberberAcceptedDoc] = useState("");
+  const [accepteddoc2, setberberAcceptedDoc2] = useState("");
   const [acceptedtime, setAcceptedTime] = useState("");
   const [accepteduserid, setAcceptedUserId] = useState("");
   const [barberaccepteddata, setBarberAcceptedData] = useState("");
-  
+  const [barberPhoto, setBarberPhoto] = useState("");
+  const [totalLocation, setTotalLocation] = useState("");
+  const [uidd, setUidd] = useState("");
   const handleOkey = async (docId) => {
-  const userId2 = firebase.auth().currentUser.uid;
-  const barberAccepted = firebase.firestore().collection('users').doc(userId2).collection("Barber_Accepted_Appointments");
+    const userId2 = firebase.auth().currentUser.uid;
     try {
+      const barberAccepted = firebase
+        .firestore()
+        .collection("users")
+        .doc(userId2)
+        .collection("Barber_Accepted_Appointments");
       const docRef = await barberAccepted.add({
         userId: accepteduserid,
         time: acceptedtime,
@@ -77,34 +120,70 @@ export default function History({ navigation }) {
         customerimage: acceptedcustomerimage,
         olddocid: accepteddocid,
         docId: "",
+        customerId: uidd,
+        totalLocation: totalLocation,
         // other appointment details
       });
-  
-      console.log('Appointment added with ID:', docRef.id);
+
+      console.log("Appointment added with ID:", docRef.id);
       setberberAcceptedDoc(docRef.id);
-  
       const barberAppointmentsCollection2 = firebase
         .firestore()
-        .collection('users')
+        .collection("users")
         .doc(userId)
-        .collection('Barber_Accepted_Appointments')
+        .collection("Barber_Accepted_Appointments")
         .doc(docRef.id);
-  
+
       await barberAppointmentsCollection2.update({ docId: docRef.id });
-  
+
       alert("Appointment Successfully Accepted");
+      const userAccepted = firebase
+        .firestore()
+        .collection("users")
+        .doc(uidd)
+        .collection("User_Accepted_Appointments");
+      const docRef2 = await userAccepted.add({
+        userId: accepteduserid,
+        time: acceptedtime,
+        hour: acceptedhour,
+        service: acceptedservice,
+        currentDate: acceptedcurrentdate,
+        barber: acceptedbarber,
+        customername: acceptedcustomername,
+        customerimage: acceptedcustomerimage,
+        barberphoto: barberPhoto,
+        olddocid: accepteddocid,
+        docId: "",
+        customerid: userId,
+        totalLocation: totalLocation,
+        // other appointment details
+      });
+      console.log("Appointment added with ID:", docRef2.id);
+      setberberAcceptedDoc2(docRef2.id);
+      const barberAppointmentsCollection3 = firebase
+        .firestore()
+        .collection("users")
+        .doc(uidd)
+        .collection("User_Accepted_Appointments")
+        .doc(docRef2.id);
+
+      await barberAppointmentsCollection3.update({ docId: docRef2.id });
     } catch (error) {
-      console.error('Error adding appointment:', error);
+      console.error("Error adding appointment:", error);
     }
     try {
-      const docRef = firebase.firestore().collection("users").doc(userId).collection("Barber_Appointments").doc(docId);
+      const docRef = firebase
+        .firestore()
+        .collection("users")
+        .doc(userId)
+        .collection("Barber_Appointments")
+        .doc(docId);
       await docRef.delete();
     } catch (error) {
       console.error("Error removing document: ", error);
     }
   };
-  
-  
+
   useEffect(() => {
     const unsubscribe = firebase
       .firestore()
@@ -117,27 +196,83 @@ export default function History({ navigation }) {
         querySnapshot.forEach((doc) => {
           userData.push(doc.data());
         });
-        setBarberAppointment(userData)
+        setBarberAppointment(userData);
+        if (userData.length > 0) {
+          const firstUserData = userData[0];
+          const barber = firstUserData.barber;
+          setAcceptedBarber(barber || "");
+          const currentDate = firstUserData.currentDate;
+          setAcceptedCurrentDate(currentDate || "");
+          const customerimage = firstUserData.customerimage;
+          setAcceptedCustomerImage(customerimage || "");
+          const customername = firstUserData.customername;
+          setAcceptedCustomerName(customername || "");
+          const docId = firstUserData.docId;
+          setAcceptedDocId(docId || "");
+          const hour = firstUserData.hour;
+          setAcceptedHour(hour || "");
+          const service = firstUserData.service;
+          setAcceptedService(service || "");
+          const time = firstUserData.time;
+          setAcceptedTime(time || "");
+          const userId = firstUserData.userId;
+          setAcceptedUserId(userId || "");
+          const totalLocation = firstUserData.totalLocation;
+          setTotalLocation(totalLocation || "");
+          const barberPhoto = firstUserData.barberPhoto;
+          setBarberPhoto(barberPhoto || "");
+        }
+        // use callback function to set uidd once
+        userData.length > 0 && setUidd(userData[0].userId);
       });
-  
+
     return () => {
       unsubscribe();
     };
   }, [userId]);
+  const combinedData = [
+    { title: "Last Appointment", data: [] },
+    { title: "Old Appointment", data: [] },
+  ];
+  const filteredList = useMemo(() => {
+    const currentDate = new Date();
+    currentDate.setDate(currentDate.getDate());
+
+    const dateString = currentDate.toISOString().substring(0, 10);
+    if (!Array.isArray(barberaccepteddata)) return [];
+    if (acceptedtime === "null") {
+      const currentDate = new Date();
+      currentDate.setDate(currentDate.getDate());
+
+      const dateString = currentDate.toISOString().substring(0, 10);
+      return barberaccepteddata.filter((item) => item.time !== dateString);
+    } else {
+      return barberaccepteddata.filter((item) => acceptedtime === item.time);
+    }
+  }, [acceptedtime, barberaccepteddata]);
+
   useEffect(() => {
+    const currentDate = new Date();
+    currentDate.setDate(currentDate.getDate());
+
+    const dateString = currentDate.toISOString().substring(0, 10);
+    console.log(dateString);
+
+    // Get the current date/time
     const unsubscribe = firebase
       .firestore()
       .collection("users")
       .doc(userId)
       .collection("Barber_Accepted_Appointments")
+      .where("time", ">=", dateString) // Only include documents where "time" is after or equal to the current date/time
       .orderBy("time", "asc")
       .onSnapshot((querySnapshot) => {
         const userData = [];
         querySnapshot.forEach((doc) => {
           userData.push(doc.data());
         });
-        setBarberAcceptedData(userData)
-        console.log(barberaccepteddata)
+        setBarberAcceptedData(userData);
+        
         if (userData.length > 0) {
           const firstUserData = userData[0];
           const barber = firstUserData.barber;
@@ -160,12 +295,13 @@ export default function History({ navigation }) {
           setAcceptedUserId(userId || "");
         }
       });
-  
     return () => {
       unsubscribe();
     };
   }, [userId]);
+
   const [userHastalik, setUserHastalik] = useState("");
+  const [filtered2, setfiltered2] = useState("");
   const [barberappointment, setBarberAppointment] = useState("");
   const userId = firebase.auth().currentUser.uid;
   const hastaliklar = userHastalik;
@@ -189,7 +325,7 @@ export default function History({ navigation }) {
         style={{
           flexDirection: "column",
           marginTop: 10,
-          height: 180,
+          height: 200,
           borderColor: "#181818",
           backgroundColor: "#2d2d2d",
           borderWidth: 3,
@@ -277,7 +413,7 @@ export default function History({ navigation }) {
         <View>
           <View style={{ flexDirection: "row" }}>
             <Image
-              source={{ uri: props.item.barberPhoto }}
+              source={{ uri: props.item.barberphoto }}
               style={{
                 marginRight: 15,
                 marginLeft: 15,
@@ -321,6 +457,24 @@ export default function History({ navigation }) {
               {props.item.service}
             </Text>
           </View>
+          <View style={{ flexDirection: "row" }}>
+            <MaterialCommunityIcons
+              name="timetable"
+              style={{ marginRight: 15, marginLeft: 15 }}
+              size={24}
+              color="white"
+            />
+            <Text
+              style={{
+                color: "white",
+                fontWeight: "700",
+                fontSize: 11,
+                marginTop: 5,
+              }}
+            >
+              {props.item.totalLocation} mins.
+            </Text>
+          </View>
         </View>
         <TouchableOpacity onPress={() => navigation.navigate("ChooseService")}>
           <View
@@ -353,12 +507,55 @@ export default function History({ navigation }) {
     );
   }
   function Item2(props) {
+
+    const sendNotification = async (expoPushToken, barber, time, hour) => {
+      console.log("66",expoPushToken)
+      console.log("66",barber)
+      console.log("66",time)
+      console.log("66",hour)
+      fetch('https://exp.host/--/api/v2/push/send', {
+  method: 'POST',
+  headers: {
+    Accept: 'application/json',
+    'Accept-Encoding': 'gzip, deflate',
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    to: expoPushToken,
+    data: { extraData: 'Some data' },
+    title: `Barber ${barber} Accepted Your Appointment`,
+    body: `Appointment will be ${time} ${hour}`,
+  }),
+})
+      }
+      const sendNotification2 = async (expoPushToken, barber, time, hour) => {
+        console.log("66",expoPushToken)
+        console.log("66",barber)
+        console.log("66",time)
+        console.log("66",hour)
+        fetch('https://exp.host/--/api/v2/push/send', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Accept-Encoding': 'gzip, deflate',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      to: expoPushToken,
+      data: { extraData: 'Some data' },
+      title: `Barber ${barber} Rejected Your Appointment`,
+      body: `Please make new Appointment for ${time} ${hour}`,
+    }),
+  })
+        }
+
+
     return (
       <View
         style={{
           flexDirection: "column",
           marginTop: 10,
-          height: 180,
+          height: 200,
           borderColor: "#181818",
           backgroundColor: "#2d2d2d",
           borderWidth: 3,
@@ -490,62 +687,89 @@ export default function History({ navigation }) {
               {props.item.service}
             </Text>
           </View>
+          <View style={{ flexDirection: "row" }}>
+            <MaterialCommunityIcons
+              name="timetable"
+              style={{ marginRight: 15, marginLeft: 15 }}
+              size={24}
+              color="white"
+            />
+            <Text
+              style={{
+                color: "white",
+                fontWeight: "700",
+                fontSize: 11,
+                marginTop: 5,
+              }}
+            >
+              {props.item.totalLocation} mins.
+            </Text>
+          </View>
         </View>
-        <View style={{flexDirection:"row",width:width}}>
-        <TouchableOpacity style={{width:width/2-10,marginLeft:8}} onPress={() => handleOkey(props.item.docId)}>
-          <View
-            style={{
-              flexDirection: "column",
-              alignItems: "center",
-              height: 40,
-              width: "96%",
-              marginLeft: "2%",
-              borderRadius: 15,
-              backgroundColor: "#058964",
-              borderColor: "#aaa",
-              borderWidth: 2,
-              marginTop: 10,
-            }}
+        <View style={{ flexDirection: "row", width: width }}>
+          <TouchableOpacity
+            style={{ width: width / 2 - 10, marginLeft: 8 }}
+            onPress={() => handleOkey(props.item.docId)}
+            onPressIn={() => sendNotification(props.item.expoPushToken,props.item.barber,props.item.time,props.item.hour)}
           >
-            <Text
+            <View
               style={{
-                color: "white",
-                fontWeight: "700",
-                fontSize: 16,
-                marginTop: 5,
+                flexDirection: "column",
+                alignItems: "center",
+                height: 40,
+                width: "96%",
+                marginLeft: "2%",
+                borderRadius: 15,
+                backgroundColor: "#058964",
+                borderColor: "#aaa",
+                borderWidth: 2,
+                marginTop: 10,
               }}
             >
-              Accept
-            </Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableHighlight style={{width:width/2-10}} onPress={() => handleDelete(props.item.docId)}>
-          <View
-            style={{
-              flexDirection: "column",
-              alignItems: "center",
-              height: 40,
-              width: "96%",
-              marginLeft: "2%",
-              borderRadius: 15,
-              backgroundColor: "#8b0000",
-              borderColor: "#aaa",
-              borderWidth: 2,
-              marginTop: 10,
-            }}
+              <Text
+                style={{
+                  color: "white",
+                  fontWeight: "700",
+                  fontSize: 16,
+                  marginTop: 5,
+                }}
+              >
+                Accept
+              </Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableHighlight
+            style={{ width: width / 2 - 10 }}
+            onPress={() => handleDelete(props.item.docId)}
+            onPressIn={() => sendNotification2(props.item.expoPushToken,props.item.barber,props.item.time,props.item.hour)}
+
           >
-            <Text
+            <View
               style={{
-                color: "white",
-                fontWeight: "700",
-                fontSize: 16,
-                marginTop: 5,
+                flexDirection: "column",
+                alignItems: "center",
+                height: 40,
+                width: "96%",
+                marginLeft: "2%",
+                borderRadius: 15,
+                backgroundColor: "#8b0000",
+                borderColor: "#aaa",
+                borderWidth: 2,
+                marginTop: 10,
               }}
             >
-              Decline
-            </Text>
-          </View>
-        </TouchableHighlight>
+              <Text
+                style={{
+                  color: "white",
+                  fontWeight: "700",
+                  fontSize: 16,
+                  marginTop: 5,
+                }}
+              >
+                Decline
+              </Text>
+            </View>
+          </TouchableHighlight>
         </View>
       </View>
     );
@@ -556,7 +780,7 @@ export default function History({ navigation }) {
         style={{
           flexDirection: "column",
           marginTop: 10,
-          height: 130,
+          height: 150,
           borderColor: "#181818",
           backgroundColor: "#2d2d2d",
           borderWidth: 3,
@@ -688,6 +912,24 @@ export default function History({ navigation }) {
               {props.item.service}
             </Text>
           </View>
+          <View style={{ flexDirection: "row" }}>
+            <MaterialCommunityIcons
+              name="timetable"
+              style={{ marginRight: 15, marginLeft: 15 }}
+              size={24}
+              color="white"
+            />
+            <Text
+              style={{
+                color: "white",
+                fontWeight: "700",
+                fontSize: 11,
+                marginTop: 5,
+              }}
+            >
+              {props.item.totalLocation} mins.
+            </Text>
+          </View>
         </View>
       </View>
     );
@@ -696,8 +938,8 @@ export default function History({ navigation }) {
   const [barberValue, setBarberValue] = useState(null);
 
   useEffect(() => {
-    const userId = firebase.auth().currentUser.uid; 
-    const userRef = firebase.firestore().collection('users').doc(userId);
+    const userId = firebase.auth().currentUser.uid;
+    const userRef = firebase.firestore().collection("users").doc(userId);
     userRef.get().then((doc) => {
       const userData = doc.data();
       const barber = userData.barber;
@@ -707,235 +949,186 @@ export default function History({ navigation }) {
   }, []);
 
   const [index, setIndex] = React.useState(0);
-  return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#141313" }}>
+  if (hastaliklar) {
+    combinedData[0].data = hastaliklar.slice(0, 2);
+    combinedData[1].data = hastaliklar.slice(2);
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: "#141313" }}>
+        {barberValue === "yes" ? (
+          <>
+          <View
+              style={{
+                flexDirection: "row",
+                backgroundColor: "#181818",
+                height: 50,
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <Text
+                style={{
+                  color: "white",
+                  fontWeight: "700",
+                  textAlign: "center",
+                  width: width,
+                  fontSize: 17,
+                  alignContent: "center",
+                }}
+              >
+                Appointment History
+              </Text>
+            </View>
 
-{barberValue === 'yes' ? (  
-<>
-<Tab
-value={index}
-containerStyle={{ height: 50, backgroundColor: "#161616",borderTopColor:"#999",borderTopWidth:0.2 }}
-onChange={(e) => setIndex(e)}
-indicatorStyle={{
-backgroundColor: "white",
-height: 2,
-}}
-variant="primary"
->
-<Tab.Item title="Appointments" titleStyle={{ fontSize: 12 }} />
-<Tab.Item title="Customers" titleStyle={{ fontSize: 12 }} />
-<Tab.Item title="Requests" titleStyle={{ fontSize: 12 }} />
-</Tab>
-<TabView
-value={index}
-onChange={setIndex}
-animationType="timing"
-disableSwipe={true}
->
-<TabView.Item style={{ backgroundColor: "#181818", width: "100%" }}>
-<View
-        style={{ width: width, height: height, backgroundColor: "#141414" }}
-      >
-        <View
-          style={{
-            flexDirection: "row",
-            backgroundColor: "#181818",
-            height: 20,
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-        </View>
-        <View style={{ marginBottom: 50 }}>
-          <ScrollView>
-            <Text
-              style={{
-                color: "white",
-                fontWeight: "700",
-                fontSize: 18,
-                marginLeft: 15,
+            <Tab
+              value={index}
+              containerStyle={{
+                height: 50,
+                backgroundColor: "#161616",
+                borderTopColor: "#999",
+                borderTopWidth: 0.2,
               }}
-            >
-              Last Appointment
-            </Text>
-            <FlatList
-              data={hastaliklar.slice(0, 2)}
-              renderItem={Item}
-              style={{ marginBottom: 0 }}
-            />
-            <Text
-              style={{
-                color: "white",
-                fontWeight: "700",
-                fontSize: 18,
-                marginLeft: 15,
-                marginTop: 15,
+              onChange={(e) => setIndex(e)}
+              indicatorStyle={{
+                backgroundColor: "white",
+                height: 2,
               }}
+              variant="primary"
             >
-              Old Appointment
-            </Text>
-            <FlatList
-              data={hastaliklar.slice(2)}
-              renderItem={Item}
-              style={{ marginBottom: 50 }}
-            />
-          </ScrollView>
-        </View>
-      </View>
-</TabView.Item>
-<TabView.Item style={{ backgroundColor: "#181818", width: "100%" }}>
-<View
-        style={{ width: width, height: height, backgroundColor: "#141414" }}
-      >
-        <View
-          style={{
-            flexDirection: "row",
-            backgroundColor: "#181818",
-            height: 20,
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-        </View>
-        <View style={{ marginBottom: 50 }}>
-          <ScrollView>
-            <Text
-              style={{
-                color: "white",
-                fontWeight: "700",
-                fontSize: 18,
-                marginLeft: 15,
-              }}
+              <Tab.Item title="Appointments" titleStyle={{ fontSize: 12 }} />
+              <Tab.Item title="Customers" titleStyle={{ fontSize: 12 }} />
+              <Tab.Item title="Requests" titleStyle={{ fontSize: 12 }} />
+            </Tab>
+            
+            <TabView
+              value={index}
+              onChange={setIndex}
+              animationType="timing"
+              disableSwipe={true}
             >
-              Soonest Appointments
-            </Text>
-            <FlatList
-              data={barberaccepteddata}
-              renderItem={Item3}
-              style={{ marginBottom: 0 }}
-            />
-            <Text
-              style={{
-                color: "white",
-                fontWeight: "700",
-                fontSize: 18,
-                marginLeft: 15,
-                marginTop: 15,
-              }}
-            >
-              Subsequent Appointments
-            </Text>
-            <FlatList
-              data={barberaccepteddata.slice(3)}
-              renderItem={Item3}
-              style={{ marginBottom: 50 }}
-            />
-          </ScrollView>
-        </View>
-      </View>
-</TabView.Item>
-<TabView.Item style={{ backgroundColor: "#181818", width: "100%" }}>
-<View
-        style={{ width: width, height: height, backgroundColor: "#141414" }}
-      >
-        <View
-          style={{
-            flexDirection: "row",
-            backgroundColor: "#181818",
-            height: 20,
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-        </View>
-        <View style={{ marginBottom: 50 }}>
-          <ScrollView>
-            <Text
-              style={{
-                color: "white",
-                fontWeight: "700",
-                fontSize: 18,
-                marginLeft: 15,
-              }}
-            >
-              Waiting Appointments
-            </Text>
-            <FlatList
-              data={barberappointment}
-              renderItem={Item2}
-              style={{ marginBottom: 0 }}
-            />
-          </ScrollView>
-        </View>
-      </View>
-</TabView.Item>
-</TabView>
-</>
-      ) : (
-        <View
-        style={{ width: width, height: height, backgroundColor: "#141414" }}
-      >
-        <View
-          style={{
-            flexDirection: "row",
-            backgroundColor: "#181818",
-            height: 50,
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <Text
-            style={{
-              color: "white",
-              fontWeight: "700",
-              textAlign: "center",
-              width: width,
-              fontSize: 17,
-              alignContent: "center",
-            }}
+              <TabView.Item
+                style={{ backgroundColor: "#181818", width: "100%" }}
+              >
+                <View
+                  style={{
+                    width: width,
+                    height: height,
+                    backgroundColor: "#141414",
+                  }}
+                >
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      backgroundColor: "#181818",
+                      height: 20,
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
+                  ></View>
+                  <View style={{ marginBottom: 50 }}>
+                    <Appointments />
+                  </View>
+                </View>
+              </TabView.Item>
+              <TabView.Item
+                style={{ backgroundColor: "#181818", width: "100%" }}
+              >
+                <View
+                  style={{
+                    width: width,
+                    height: height,
+                    backgroundColor: "#141414",
+                  }}
+                >
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      backgroundColor: "#181818",
+                      height: 20,
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
+                  ></View>
+                  <View style={{ marginBottom: 50 }}>
+                    <CustomerAppointments />
+                  </View>
+                </View>
+              </TabView.Item>
+              <TabView.Item
+                style={{ backgroundColor: "#181818", width: "100%" }}
+              >
+                <View
+                  style={{
+                    width: width,
+                    height: height,
+                    backgroundColor: "#141414",
+                  }}
+                >
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      backgroundColor: "#181818",
+                      height: 20,
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
+                  ></View>
+                  <View style={{ marginBottom: 50 }}>
+                    <Text
+                      style={{
+                        color: "white",
+                        fontWeight: "700",
+                        fontSize: 18,
+                        marginLeft: 15,
+                      }}
+                    >
+                      Waiting Appointments
+                    </Text>
+                    <FlatList
+                      data={barberappointment}
+                      renderItem={Item2}
+                      style={{ marginBottom: 70 }}
+                    />
+                  </View>
+                </View>
+              </TabView.Item>
+            </TabView>
+          </>
+        ) : (
+          <View
+            style={{ width: width, height: height, backgroundColor: "#141414" }}
           >
-            Appointment History
-          </Text>
-        </View>
-        <View style={{ marginBottom: 50 }}>
-          <ScrollView>
-            <Text
+            <View
               style={{
-                color: "white",
-                fontWeight: "700",
-                fontSize: 18,
-                marginLeft: 15,
+                flexDirection: "row",
+                backgroundColor: "#181818",
+                height: 50,
+                alignItems: "center",
+                justifyContent: "space-between",
               }}
             >
-              Last Appointment
-            </Text>
-            <FlatList
-              data={hastaliklar.slice(0, 2)}
-              renderItem={Item}
-              style={{ marginBottom: 0 }}
-            />
-            <Text
-              style={{
-                color: "white",
-                fontWeight: "700",
-                fontSize: 18,
-                marginLeft: 15,
-                marginTop: 15,
-              }}
-            >
-              Old Appointment
-            </Text>
-            <FlatList
-              data={hastaliklar.slice(2)}
-              renderItem={Item}
-              style={{ marginBottom: 50 }}
-            />
-          </ScrollView>
-        </View>
-      </View>
-      )}
-    </SafeAreaView>
-  );
+              <Text
+                style={{
+                  color: "white",
+                  fontWeight: "700",
+                  textAlign: "center",
+                  width: width,
+                  fontSize: 17,
+                  alignContent: "center",
+                }}
+              >
+                Appointment History
+              </Text>
+            </View>
+            <View style={{ marginBottom: 50 }}>
+              <Appointments />
+            </View>
+          </View>
+        )}
+      </SafeAreaView>
+    );
+  } else {
+    return <Text>Loading...</Text>;
+  }
 }
 const styles = StyleSheet.create({
   container: {

@@ -7,10 +7,32 @@ import ExpoStatusBar from "expo-status-bar/build/ExpoStatusBar";
 import TabNavigator from "./screens/TabNavigator"
 import StackNavigator from "./screens/StackNavigator";
 import { LogBox } from 'react-native';
+import registerNNPushToken from 'native-notify';
+import { getPushDataObject } from 'native-notify';
+
+
+
 LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
 LogBox.ignoreAllLogs();//Ignore all log notifications
 
+
+
 export default function App() {
+
+
+
+
+
+
+
+
+
+
+  registerNNPushToken(6821, 'JQu9lUf2yV3cibDTlogGKK');
+  let pushDataObject = getPushDataObject();
+  useEffect(() => {
+       console.log(pushDataObject);
+  }, [pushDataObject]);
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState();
   function onAuthStateChanged(user) {

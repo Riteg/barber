@@ -35,13 +35,12 @@ const width = Dimensions.get("window").width;
 const height = Dimensions.get("window").height;
 const guidelineBaseWidth = 350;
 const guidelineBaseHeight = 680;
-const scale = size => width / guidelineBaseWidth * size;
-const verticalScale = size => height / guidelineBaseHeight * size;
-const moderateScale = (size, factor = 0.5) => size + ( scale(size) - size ) * factor;
+const scale = (size) => (width / guidelineBaseWidth) * size;
+const verticalScale = (size) => (height / guidelineBaseHeight) * size;
+const moderateScale = (size, factor = 0.5) =>
+  size + (scale(size) - size) * factor;
 
 export default function Admin({ navigation }) {
-
-
   function Item(props) {
     const { index, item } = props;
     return (
@@ -50,30 +49,55 @@ export default function Admin({ navigation }) {
         onPressIn={() => setSelectedItem(item.id)}
         onPress={() => setModalVisible(true)}
       >
-      <View style={{flex:1,width:width}}>
-      <ListItem containerStyle={{ backgroundColor: index === 0 ? "#161616" : index === 1 ? "#181818" : index === 2 ? "#161616" : index === 3 ? "#181818" : "",height:width < 375 ? 49 : 75 }}>
-          <ListItem.Content>
-            <ListItem.Title style={{ color: "#9f9f9f" ,fontSize: width < 375 ? 12 : 24}}>
-              {item.title}
-            </ListItem.Title>
-            <ListItem.Subtitle style={{ color: "#fafafa" ,fontSize: width < 375 ? 11 : 24}}>
-              {index === 0 ? fullname : index === 1 ? currentEmail : index === 2 ? phone : index === 3 ? "****" : ""}
-            </ListItem.Subtitle>
-          </ListItem.Content>
-          <ListItem.Chevron color="white" />
-        </ListItem>
+        <View style={{ flex: 1, width: width }}>
+          <ListItem
+            containerStyle={{
+              backgroundColor:
+                index === 0
+                  ? "#161616"
+                  : index === 1
+                  ? "#181818"
+                  : index === 2
+                  ? "#161616"
+                  : index === 3
+                  ? "#181818"
+                  : "",
+              height: width < 375 ? 49 : 75,
+            }}
+          >
+            <ListItem.Content>
+              <ListItem.Title
+                style={{ color: "#9f9f9f", fontSize: width < 375 ? 12 : 24 }}
+              >
+                {item.title}
+              </ListItem.Title>
+              <ListItem.Subtitle
+                style={{ color: "#fafafa", fontSize: width < 375 ? 11 : 24 }}
+              >
+                {index === 0
+                  ? fullname
+                  : index === 1
+                  ? currentEmail
+                  : index === 2
+                  ? phone
+                  : index === 3
+                  ? "****"
+                  : ""}
+              </ListItem.Subtitle>
+            </ListItem.Content>
+            <ListItem.Chevron color="white" />
+          </ListItem>
         </View>
       </TouchableHighlight>
     );
   }
-  
-  const data = [
-    { id: '1', title: 'FullName'},
-    { id: '2', title: 'Email' },
-    { id: '3', title: 'Phone'},
-    { id: '4', title: 'Password'},
-  ];
 
+  const data = [
+    { id: "1", title: "FullName" },
+    { id: "2", title: "Email" },
+    { id: "3", title: "Phone" },
+    { id: "4", title: "Password" },
+  ];
 
   const [modalVisible, setModalVisible] = useState("");
   const [selectedItem, setSelectedItem] = useState(null);
@@ -99,7 +123,6 @@ export default function Admin({ navigation }) {
   const userId = firebase.auth().currentUser.uid;
   const userRef = firebase.firestore().collection("users").doc(userId);
 
-
   userRef.get().then((doc) => {
     const userData = doc.data();
     const fullname = userData.fullname;
@@ -117,192 +140,221 @@ export default function Admin({ navigation }) {
   let adminValue = null;
   const [admin, setAdmin] = useState(null);
 
-
-
   const renderModal = () => {
     switch (selectedItem) {
-      case '1':
+      case "1":
         return (
           <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-        >
-          <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-            <View
-              style={{
-                backgroundColor: "#121212",
-                padding: 20,
-                width:width-60,
-              }}
-            >
-            <TextInput
-            style={styles.input}
-            placeholder="Full Name"
-            placeholderTextColor={"#909090"}
-            onChangeText={(fullnamenew) => setFullnamenew(fullnamenew)}
-            keyboardType={"default"}
-          />
-          <View style={{flexDirection:"row"}}>
-          <TouchableOpacity onPress={()=> handleSubmit2(fullnamenew)}          
-              style={styles.button2}>
-            <Text style={styles.buttonText2}>Update</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => setModalVisible(false)}          
-              style={styles.button3}>
-            <Text style={styles.buttonText2}>Close</Text>
-              </TouchableOpacity>
-          </View>
-            </View>
-          </View>
-        </Modal>
-        );
-      case '2':
-        return (
-          <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-
-        >
-          <View
-            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
           >
             <View
               style={{
-                backgroundColor: "#121212",
-                padding: 20,
-                width: width - 60,
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
               }}
             >
-              <TextInput
-                placeholder="Current Email"
-                placeholderTextColor={"#909090"}
-                style={styles.input}
-                value={currentEmail}
-                onChangeText={setCurrentEmail}
-              />
-              <TextInput
-                placeholder="New Email"
-                value={newEmail}
-                placeholderTextColor={"#909090"}
-                style={styles.input}
-                onChangeText={setnewEmail}
-              />
-              <TextInput
-                secureTextEntry
-                placeholder="Current Password"
-                placeholderTextColor={"#909090"}
-                style={styles.input}
-                value={currentPassword}
-                onChangeText={setCurrentPassword}
-              />
-              <View style={{ flexDirection: "row" }}>
-                <TouchableOpacity
-                  onPress={handleChangeEmail}
-                  style={styles.button2}
-                >
-                  <Text style={styles.buttonText2}>Update</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => setModalVisible(false)}
-                  style={styles.button3}
-                >
-                  <Text style={styles.buttonText2}>Close</Text>
-                </TouchableOpacity>
+              <View
+                style={{
+                  backgroundColor: "#121212",
+                  padding: 20,
+                  width: width - 60,
+                }}
+              >
+                <TextInput
+                  style={styles.input}
+                  placeholder="Full Name"
+                  placeholderTextColor={"#909090"}
+                  onChangeText={(fullnamenew) => setFullnamenew(fullnamenew)}
+                  keyboardType={"default"}
+                />
+                <View style={{ flexDirection: "row" }}>
+                  <TouchableOpacity
+                    onPress={() => handleSubmit2(fullnamenew)}
+                    style={styles.button2}
+                  >
+                    <Text style={styles.buttonText2}>Update</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => setModalVisible(false)}
+                    style={styles.button3}
+                  >
+                    <Text style={styles.buttonText2}>Close</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
-          </View>
-        </Modal>
+          </Modal>
         );
-      case '3':
+      case "2":
         return (
           <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-
-        >
-          <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
+          >
             <View
               style={{
-                backgroundColor: "#121212",
-                padding: 20,
-                width:width-60,
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
               }}
             >
-            <TextInput
-            style={styles.input}
-            placeholder="Phone Number"
-            placeholderTextColor={"#909090"}
-            onChangeText={(phonenew) => setPhonenew(phonenew)}
-            keyboardType={"phone-pad"}
-            maxLength={11}
-          />
-          <View style={{flexDirection:"row"}}>
-          <TouchableOpacity onPress={()=> handleSubmit(phonenew)}          
-              style={styles.button2}>
-            <Text style={styles.buttonText2}>Update</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => setModalVisible(false)}          
-              style={styles.button3}>
-            <Text style={styles.buttonText2}>Close</Text>
-              </TouchableOpacity>
-          </View>
+              <View
+                style={{
+                  backgroundColor: "#121212",
+                  padding: 20,
+                  width: width - 60,
+                }}
+              >
+                <TextInput
+                  placeholder="Current Email"
+                  placeholderTextColor={"#909090"}
+                  style={styles.input}
+                  value={currentEmail}
+                  onChangeText={setCurrentEmail}
+                />
+                <TextInput
+                  placeholder="New Email"
+                  value={newEmail}
+                  placeholderTextColor={"#909090"}
+                  style={styles.input}
+                  onChangeText={setnewEmail}
+                />
+                <TextInput
+                  secureTextEntry
+                  placeholder="Current Password"
+                  placeholderTextColor={"#909090"}
+                  style={styles.input}
+                  value={currentPassword}
+                  onChangeText={setCurrentPassword}
+                />
+                <View style={{ flexDirection: "row" }}>
+                  <TouchableOpacity
+                    onPress={handleChangeEmail}
+                    style={styles.button2}
+                  >
+                    <Text style={styles.buttonText2}>Update</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => setModalVisible(false)}
+                    style={styles.button3}
+                  >
+                    <Text style={styles.buttonText2}>Close</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
             </View>
-          </View>
-        </Modal>
+          </Modal>
         );
-      case '4':
+      case "3":
         return (
           <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-        >
-          <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
+          >
             <View
               style={{
-                backgroundColor: "#121212",
-                padding: 20,
-                width:width-60,
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
               }}
             >
-        <TextInput
-          secureTextEntry
-          placeholder="Current Password"
-          placeholderTextColor={"#909090"}
-          style={styles.input}
-          value={currentPassword}
-          onChangeText={setCurrentPassword}
-        />
-        <TextInput
-          secureTextEntry
-          placeholder="New Password"
-          value={newPassword}
-          placeholderTextColor={"#909090"}
-          style={styles.input}
-          onChangeText={setNewPassword}
-        />
-          <View style={{flexDirection:"row"}}>
-          <TouchableOpacity onPress={handleChangePassword}          
-              style={styles.button2}>
-            <Text style={styles.buttonText2}>Update</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => setModalVisible(false)}          
-              style={styles.button3}>
-            <Text style={styles.buttonText2}>Close</Text>
-              </TouchableOpacity>
-          </View>
+              <View
+                style={{
+                  backgroundColor: "#121212",
+                  padding: 20,
+                  width: width - 60,
+                }}
+              >
+                <TextInput
+                  style={styles.input}
+                  placeholder="Phone Number"
+                  placeholderTextColor={"#909090"}
+                  onChangeText={(phonenew) => setPhonenew(phonenew)}
+                  keyboardType={"phone-pad"}
+                  maxLength={11}
+                />
+                <View style={{ flexDirection: "row" }}>
+                  <TouchableOpacity
+                    onPress={() => handleSubmit(phonenew)}
+                    style={styles.button2}
+                  >
+                    <Text style={styles.buttonText2}>Update</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => setModalVisible(false)}
+                    style={styles.button3}
+                  >
+                    <Text style={styles.buttonText2}>Close</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
             </View>
-          </View>
-        </Modal>
+          </Modal>
+        );
+      case "4":
+        return (
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
+          >
+            <View
+              style={{
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <View
+                style={{
+                  backgroundColor: "#121212",
+                  padding: 20,
+                  width: width - 60,
+                }}
+              >
+                <TextInput
+                  secureTextEntry
+                  placeholder="Current Password"
+                  placeholderTextColor={"#909090"}
+                  style={styles.input}
+                  value={currentPassword}
+                  onChangeText={setCurrentPassword}
+                />
+                <TextInput
+                  secureTextEntry
+                  placeholder="New Password"
+                  value={newPassword}
+                  placeholderTextColor={"#909090"}
+                  style={styles.input}
+                  onChangeText={setNewPassword}
+                />
+                <View style={{ flexDirection: "row" }}>
+                  <TouchableOpacity
+                    onPress={handleChangePassword}
+                    style={styles.button2}
+                  >
+                    <Text style={styles.buttonText2}>Update</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => setModalVisible(false)}
+                    style={styles.button3}
+                  >
+                    <Text style={styles.buttonText2}>Close</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </Modal>
         );
       default:
         return null;
     }
   };
-
 
   useEffect(() => {
     const userId = firebase.auth().currentUser.uid;
@@ -315,9 +367,8 @@ export default function Admin({ navigation }) {
     });
   }, []);
 
-
   useEffect(() => {
-    const collectionRef = firebase.firestore().collection('users');
+    const collectionRef = firebase.firestore().collection("users");
     const unsubscribe = collectionRef.onSnapshot((querySnapshot) => {
       setDocumentCount(querySnapshot.size);
     });
@@ -325,11 +376,11 @@ export default function Admin({ navigation }) {
     return unsubscribe;
   }, []);
   useEffect(() => {
-    const collectionRef2 = firebase.firestore().collection('users');
+    const collectionRef2 = firebase.firestore().collection("users");
     const unsubscribe = collectionRef2.onSnapshot((querySnapshot) => {
       let count = 0;
       querySnapshot.forEach((doc) => {
-        const appointmentRef = doc.ref.collection('appointment');
+        const appointmentRef = doc.ref.collection("appointment");
         appointmentRef.get().then((subCollectionSnapshot) => {
           count += subCollectionSnapshot.size;
           setDocumentCount2(count);
@@ -340,7 +391,6 @@ export default function Admin({ navigation }) {
     return unsubscribe;
   }, []);
 
-  
   const handleChangePassword = () => {
     // Get the current user
     const user = firebase.auth().currentUser;
@@ -430,8 +480,11 @@ export default function Admin({ navigation }) {
   const handleSubmit = async (phone) => {
     try {
       setPhone(phonenew);
-      console.log(userId)
-      const collectionRef = firebase.firestore().collection("users").doc(userId);
+      console.log(userId);
+      const collectionRef = firebase
+        .firestore()
+        .collection("users")
+        .doc(userId);
       await collectionRef.update({
         phone,
       });
@@ -443,7 +496,10 @@ export default function Admin({ navigation }) {
   const handleSubmit2 = async (fullname) => {
     try {
       setFullname(fullnamenew);
-      const collectionRef = firebase.firestore().collection("users").doc(userId);
+      const collectionRef = firebase
+        .firestore()
+        .collection("users")
+        .doc(userId);
       await collectionRef.update({
         fullname,
       });
@@ -453,37 +509,58 @@ export default function Admin({ navigation }) {
     }
   };
 
-
   return (
-
- 
- <>
-    
-    <View style={{flexDirection:'row',backgroundColor:"#181818",height:50,alignItems:'center',justifyContent:'space-between'}}>
-      <Text style={{color:'white',fontWeight:'700',alignItems:'center',fontSize:17,alignContent:"center",textAlign:'center',width:width,fontSize:17}}>Profile</Text>
-    </View>
-      <Tab
-      value={index}
-      containerStyle={{height:50,backgroundColor:"#181818",borderTopColor:"#999",borderTopWidth:0.2}}
-      onChange={(e) => setIndex(e)}
-      indicatorStyle={{
-        backgroundColor: 'white',
-        height: 2,
-      }}
-      variant="primary"
-    >
-      <Tab.Item
-        title="Profile"
-        titleStyle={{ fontSize: 12 }}
-      />
-      <Tab.Item
-        title="Notifications"
-        titleStyle={{ fontSize: 12 }}
-      />
-    </Tab>
-    <TabView value={index} onChange={setIndex} animationType="timing" disableSwipe={true}>
-      <TabView.Item style={{ backgroundColor: '#181818', width: '100%' }}>
+    <>
       <View
+        style={{
+          flexDirection: "row",
+          backgroundColor: "#181818",
+          height: 50,
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        <Text
+          style={{
+            color: "white",
+            fontWeight: "700",
+            alignItems: "center",
+            fontSize: 17,
+            alignContent: "center",
+            textAlign: "center",
+            width: width,
+            fontSize: 17,
+          }}
+        >
+          Profile
+        </Text>
+      </View>
+      <Tab
+        value={index}
+        containerStyle={{
+          height: 50,
+          backgroundColor: "#181818",
+          borderTopColor: "#999",
+          borderTopWidth: 0.2,
+        }}
+        onChange={(e) => setIndex(e)}
+        indicatorStyle={{
+          backgroundColor: "white",
+          height: 2,
+        }}
+        variant="primary"
+      >
+        <Tab.Item title="Profile" titleStyle={{ fontSize: 12 }} />
+        <Tab.Item title="Notifications" titleStyle={{ fontSize: 12 }} />
+      </Tab>
+      <TabView
+        value={index}
+        onChange={setIndex}
+        animationType="timing"
+        disableSwipe={true}
+      >
+        <TabView.Item style={{ backgroundColor: "#181818", width: "100%" }}>
+          <View
             style={{ width: width, height: height, backgroundColor: "#181818" }}
           >
             <ProfilePicture />
@@ -496,20 +573,16 @@ export default function Admin({ navigation }) {
                 </ListItem.Title>
               </ListItem.Content>
             </ListItem>
-            <ScrollView keyboardShouldPersistTaps="always">
             <FlatList
-  data={data}
-  renderItem={Item}
-  keyExtractor={(item) => item.id}
-  style={{ flexGrow: 1 }}
-/>
-{renderModal()}
-          </ScrollView>
+              data={data}
+              renderItem={Item}
+              keyExtractor={(item) => item.id}
+              style={{ flexGrow: 1 }}
+            />
+            {renderModal()}
           </View>
-      
-    
-      </TabView.Item>
-      <TabView.Item style={{ backgroundColor: "#181818", width: "100%" }}>
+        </TabView.Item>
+        <TabView.Item style={{ backgroundColor: "#181818", width: "100%" }}>
           <View
             style={{ width: width, height: height, backgroundColor: "#181818" }}
           >
@@ -526,17 +599,15 @@ export default function Admin({ navigation }) {
             </View>
           </View>
         </TabView.Item>
-    </TabView>
+      </TabView>
     </>
-
-)
+  );
 }
-
 
 const styles = StyleSheet.create({
   header: {
     height: 150,
-    width:width,
+    width: width,
   },
   editText2: {
     color: "#fff",
@@ -546,19 +617,19 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     fontSize: 8,
   },
-  edit:{
-    position:"absolute",
-    right:3,
-    backgroundColor:"#00000064",
-    height:25,
+  edit: {
+    position: "absolute",
+    right: 3,
+    backgroundColor: "#00000064",
+    height: 25,
   },
-  editText:{
-    color:"#fff",
-    justifyContent:"center",
-    alignContent:"center",
-    textAlign:"center",
-    alignSelf:"center",
-    marginTop:2
+  editText: {
+    color: "#fff",
+    justifyContent: "center",
+    alignContent: "center",
+    textAlign: "center",
+    alignSelf: "center",
+    marginTop: 2,
   },
   avatar: {
     width: 130,
@@ -566,7 +637,7 @@ const styles = StyleSheet.create({
     borderRadius: 63,
     borderWidth: 4,
     borderColor: "white",
-    flex:1,
+    flex: 1,
   },
   name: {
     fontSize: 22,
@@ -574,13 +645,12 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   input: {
-    backgroundColor: '#404040',
-    color:"#fff",
+    backgroundColor: "#404040",
+    color: "#fff",
     paddingHorizontal: 15,
     paddingVertical: 10,
     marginTop: 5,
   },
-
 
   name: {
     fontSize: 28,
@@ -604,19 +674,19 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    alignSelf:"center",
+    alignSelf: "center",
     width: 80,
     borderRadius: 20,
-    borderWidth:2,
-    borderColor:"#fff",
+    borderWidth: 2,
+    borderColor: "#fff",
     backgroundColor: "#d90",
   },
   buttonText: {
-    color: '#fff',
-    fontWeight: '700',
+    color: "#fff",
+    fontWeight: "700",
     fontSize: 13,
-    justifyContent:"center",
-    textAlign:"center",
+    justifyContent: "center",
+    textAlign: "center",
   },
   button2: {
     marginTop: 20,
@@ -624,7 +694,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
-    alignSelf:"center",
+    alignSelf: "center",
     width: 150,
     borderRadius: 0,
     backgroundColor: "#123123",
@@ -632,23 +702,23 @@ const styles = StyleSheet.create({
   button3: {
     marginTop: 20,
     height: 45,
-    marginLeft:5,
+    marginLeft: 5,
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
-    alignSelf:"center",
+    alignSelf: "center",
     width: 150,
     borderRadius: 0,
     backgroundColor: "#800020",
   },
   buttonText2: {
-    color: '#fff',
-    fontWeight: '700',
+    color: "#fff",
+    fontWeight: "700",
     fontSize: 13,
-    justifyContent:"center",
-    textAlign:"center",
+    justifyContent: "center",
+    textAlign: "center",
   },
-  text:{
-    color:"white"
+  text: {
+    color: "white",
   },
-})
+});
