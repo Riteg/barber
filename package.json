@@ -2,7 +2,7 @@
   "name": "berber-app",
   "version": "1.0.3",
   "scripts": {
-    "start": "expo start",
+    "start": "expo start --dev-client",
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web"
@@ -36,6 +36,7 @@
     "react-native-app-intro-slider": "^4.0.4",
     "react-native-autocomplete-dropdown": "^2.1.0",
     "react-native-calendars": "^1.1293.0",
+    "react-native-eject": "^0.2.0",
     "react-native-fbsdk-next": "^11.1.0",
     "react-native-safe-area-context": "4.4.1",
     "react-native-screens": "~3.18.0",
