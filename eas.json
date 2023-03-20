@@ -3,6 +3,9 @@
     "version": ">= 3.6.0"
   },
   "build": {
+    "prod": {
+      "releaseChannel": "barbers"
+    },
     "development": {
       "developmentClient": true,
       "distribution": "internal",
