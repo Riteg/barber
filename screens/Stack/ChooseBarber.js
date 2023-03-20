@@ -1,7 +1,5 @@
 import React, { useRef, useState, useEffect, useMemo } from "react";
-import Carousel, {
-  ParallaxImage,
-} from "react-native-snap-carousel-deprecated-prop-types";
+
 import {
   View,
   Text,
@@ -14,9 +12,6 @@ import {
   ScrollView,
   RefreshControl,
 } from "react-native";
-import { Animated } from "react-native";
-import { Pressable } from "react-native";
-import { CheckBox } from "@rneui/themed/dist/CheckBox";
 import { FlatList } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { firebase } from "../../config";

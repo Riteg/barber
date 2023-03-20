@@ -1,7 +1,4 @@
 import React, { useRef, useState, useEffect, useMemo } from "react";
-import Carousel, {
-  ParallaxImage,
-} from "react-native-snap-carousel-deprecated-prop-types";
 import {
   View,
   Text,

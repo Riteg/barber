@@ -7,8 +7,6 @@ import { AntDesign } from '@expo/vector-icons';
 import { firebase } from "../../config";
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
-import { LoginManager, AuthenticationToken } from 'react-native-fbsdk-next';
-import { sha256 } from 'react-native-sha256';
 import { useState } from 'react';
 const width = Dimensions.get("window").width;
 const height = Dimensions.get("window").height;

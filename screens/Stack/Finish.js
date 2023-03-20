@@ -1,7 +1,4 @@
 import React, { useRef, useState, useEffect, useMemo } from "react";
-import Carousel, {
-  ParallaxImage,
-} from "react-native-snap-carousel-deprecated-prop-types";
 import {
   View,
   Text,
@@ -13,14 +10,6 @@ import {
   Image,
   TextInput,
 } from "react-native";
-import { Animated } from "react-native";
-import { Pressable } from "react-native";
-import { CheckBox } from "@rneui/themed/dist/CheckBox";
-import { FlatList } from "react-native";
-import DatePicker from "react-native-styled-datepicker";
-import { Calendar, CalendarList, Agenda } from "react-native-calendars";
-import { useNavigation } from "@react-navigation/native";
-import { LocaleConfig } from "react-native-calendars";
 import { AntDesign, MaterialIcons, Ionicons } from "@expo/vector-icons";
 
 import { firebase } from "../../config";

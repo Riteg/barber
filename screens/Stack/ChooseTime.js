@@ -1,7 +1,4 @@
 import React, { useRef, useState, useEffect, useMemo } from "react";
-import Carousel, {
-  ParallaxImage,
-} from "react-native-snap-carousel-deprecated-prop-types";
 import {
   View,
   Text,
@@ -13,15 +10,12 @@ import {
   Image,
   Button,
 } from "react-native";
-import { Animated } from "react-native";
-import { CheckBox } from "@rneui/themed/dist/CheckBox";
+
 import { FlatList } from "react-native";
-import DatePicker from "react-native-styled-datepicker";
 import { Calendar, CalendarList, Agenda } from "react-native-calendars";
 import { useNavigation } from "@react-navigation/native";
 import { LocaleConfig } from "react-native-calendars";
 import { firebase } from "../../config";
-import { TimePicker, ValueMap } from "react-native-simple-time-picker";
 const width = Dimensions.get("window").width;
 const height = Dimensions.get("window").height;
 const { width: screenWidth } = Dimensions.get("window");
