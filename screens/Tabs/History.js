@@ -15,6 +15,7 @@ import {
   AntDesign,
   Ionicons,
   MaterialCommunityIcons,
+  MaterialIcons,
 } from "@expo/vector-icons";
 import { Tab, Text, TabView, Image } from "@rneui/themed";
 import Appointments from "./Appointments";
@@ -302,6 +303,24 @@ export default function History({ navigation }) {
   };
 
   function Item2(props) {
+    const handleOk = () => {
+      handleOkey(props.item.docId);
+      sendNotification(
+        props.item.expoPushToken,
+        props.item.barber,
+        props.item.time,
+        props.item.hour
+      );
+    };
+    const handleDel = () => {
+      handleDelete(props.item.docId);
+      sendNotification2(
+        props.item.expoPushToken,
+        props.item.barber,
+        props.item.time,
+        props.item.hour
+      );
+    };
     const sendNotification = async (expoPushToken, barber, time, hour) => {
       console.log("66", expoPushToken);
       console.log("66", barber);
@@ -348,7 +367,7 @@ export default function History({ navigation }) {
         style={{
           flexDirection: "column",
           marginTop: 10,
-          height: 200,
+          height: 220,
           borderColor: "#181818",
           backgroundColor: "#2d2d2d",
           borderWidth: 3,
@@ -498,19 +517,29 @@ export default function History({ navigation }) {
               {props.item.totalLocation} mins.
             </Text>
           </View>
+          <View style={{ flexDirection: "row" }}>
+            <MaterialIcons
+              name="comment"
+              style={{ marginRight: 15, marginLeft: 15 }}
+              size={24}
+              color="white"
+            />
+            <Text
+              style={{
+                color: "white",
+                fontWeight: "700",
+                fontSize: 11,
+                marginTop: 5,
+              }}
+            >
+              {props.item.suggests}
+            </Text>
+          </View>
         </View>
         <View style={{ flexDirection: "row", width: width }}>
           <TouchableOpacity
             style={{ width: width / 2 - 10, marginLeft: 8 }}
-            onPress={() => handleOkey(props.item.docId)}
-            onPressIn={() =>
-              sendNotification(
-                props.item.expoPushToken,
-                props.item.barber,
-                props.item.time,
-                props.item.hour
-              )
-            }
+            onPress={handleOk}
           >
             <View
               style={{
@@ -540,15 +569,7 @@ export default function History({ navigation }) {
           </TouchableOpacity>
           <TouchableHighlight
             style={{ width: width / 2 - 10 }}
-            onPress={() => handleDelete(props.item.docId)}
-            onPressIn={() =>
-              sendNotification2(
-                props.item.expoPushToken,
-                props.item.barber,
-                props.item.time,
-                props.item.hour
-              )
-            }
+            onPress={handleDel}
           >
             <View
               style={{
@@ -721,7 +742,7 @@ export default function History({ navigation }) {
                           tintColor="#F8852D"
                         />
                       }
-                      style={{ marginBottom: 70 }}
+                      style={{ marginBottom: 130 }}
                     />
                   </View>
                 </View>

@@ -22,8 +22,9 @@ import {
   Ionicons,
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
-import * as Device from 'expo-device';
-import * as Notifications from 'expo-notifications';
+import * as Device from "expo-device";
+import * as Notifications from "expo-notifications";
+import { AppState } from "react-native";
 
 const width = Dimensions.get("window").width;
 const height = Dimensions.get("window").height;
@@ -37,33 +38,32 @@ Notifications.setNotificationHandler({
   }),
 });
 
-
-
 async function registerForPushNotificationsAsync() {
   let token;
   if (Device.isDevice) {
-    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    const { status: existingStatus } =
+      await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
-    if (existingStatus !== 'granted') {
+    if (existingStatus !== "granted") {
       const { status } = await Notifications.requestPermissionsAsync();
       finalStatus = status;
     }
-    if (finalStatus !== 'granted') {
-      alert('Failed to get push token for push notification!');
+    if (finalStatus !== "granted") {
+      alert("Failed to get push token for push notification!");
       return;
     }
     token = (await Notifications.getExpoPushTokenAsync()).data;
-    console.log("31",token);
+    console.log(token);
   } else {
-    alert('Must use physical device for Push Notifications');
+    alert("Must use physical device for Push Notifications");
   }
 
-  if (Platform.OS === 'android') {
-    Notifications.setNotificationChannelAsync('default', {
-      name: 'default',
+  if (Platform.OS === "android") {
+    Notifications.setNotificationChannelAsync("default", {
+      name: "default",
       importance: Notifications.AndroidImportance.MAX,
       vibrationPattern: [0, 250, 250, 250],
-      lightColor: '#FF231F7C',
+      lightColor: "#FF231F7C",
     });
   }
 
@@ -71,51 +71,56 @@ async function registerForPushNotificationsAsync() {
 }
 
 export default function ChooseService({ props, navigation }) {
-  const [expoPushToken, setExpoPushToken] = useState('');
+  const [expoPushToken, setExpoPushToken] = useState("");
   const [notification, setNotification] = useState(false);
   const notificationListener = useRef();
   const responseListener = useRef();
 
   useEffect(() => {
-    registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
-    console.log("33",expoPushToken)
-    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
-      setNotification(notification);
-    });
+    registerForPushNotificationsAsync().then((token) =>
+      setExpoPushToken(token)
+    );
+    console.log("33", expoPushToken);
+    notificationListener.current =
+      Notifications.addNotificationReceivedListener((notification) => {
+        setNotification(notification);
+      });
 
-    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-      console.log("31",response);
-    });
+    responseListener.current =
+      Notifications.addNotificationResponseReceivedListener((response) => {
+        console.log("31", response);
+      });
 
     return () => {
-      Notifications.removeNotificationSubscription(notificationListener.current);
+      Notifications.removeNotificationSubscription(
+        notificationListener.current
+      );
       Notifications.removeNotificationSubscription(responseListener.current);
     };
   }, []);
 
-
-
-
-
+  useEffect(() => {
+    const userId = firebase.auth().currentUser.uid;
+    const userRef = firebase.firestore().collection("users").doc(userId);
+    if (expoPushToken) {
+      // check if expoPushToken is not null
+      userRef
+        .update({
+          userId,
+          expoPushToken,
+        })
+        .then(() => {
+          console.log("Document successfully updated!");
+        })
+        .catch((error) => {
+          console.error("Error updating document: ", error);
+        });
+    }
+  }, [userId, expoPushToken]);
 
   const [status, setStatus] = useState("");
   const [barbers, setBarbers] = useState("");
 
-  useEffect(() => {
-    const userId = firebase.auth().currentUser.uid;
-    const userRef = firebase.firestore().collection("users").doc(userId);
-    userRef
-      .update({
-        userId,
-        expoPushToken:expoPushToken
-      })
-      .then(() => {
-        console.log("Document successfully updated!");
-      })
-      .catch((error) => {
-        console.error("Error updating document: ", error);
-      });
-  }, [userId]);
   const fullList = barbers;
   const userId = firebase.auth().currentUser.uid;
   const collectionRef = firebase
@@ -322,7 +327,18 @@ export default function ChooseService({ props, navigation }) {
               </TouchableOpacity>
             </View>
             <Text style={styles.barberbutton2}>Choose Service</Text>
-            <FlatList ref={carouselRef} data={filteredList} renderItem={Item} />
+            <FlatList
+              ref={carouselRef}
+              data={filteredList}
+              renderItem={Item}
+              refreshControl={
+                <RefreshControl
+                  refreshing={refreshing}
+                  onRefresh={onRefresh}
+                  tintColor="#F8852D"
+                />
+              }
+            />
             <View
               style={{
                 flexDirection: "row",

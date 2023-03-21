@@ -1,6 +1,7 @@
 import {
   View,
   SafeAreaView,
+  RefreshControl,
   Dimensions,
   Modal,
   TouchableHighlight,
@@ -9,7 +10,7 @@ import {
   TextInput,
   FlatList,
 } from "react-native";
-import React, { useEffect, useState,useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { auth } from "../../firebase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Tab, Text, TabView, ListItem, Avatar, Image } from "@rneui/themed";
@@ -21,30 +22,14 @@ import EditBarber from "./AdminPanel/EditBarber";
 import EditAdmin from "./AdminPanel/EditAdmin";
 import EditService from "./AdminPanel/EditService";
 import ProfilePicture from "./Profile/ProfilePicture";
-import {Button, Platform } from 'react-native';
-import * as Device from 'expo-device';
-import * as Notifications from 'expo-notifications';
-
+import { Button, Platform } from "react-native";
+import * as Device from "expo-device";
+import * as Notifications from "expo-notifications";
 
 const width = Dimensions.get("window").width;
 const height = Dimensions.get("window").height;
 
-
-
 export default function Admin({ navigation }) {
-
-
-
-
-
-
-
-
-
-
-
-
-
   function Item(props) {
     const { index, item } = props;
     return (
@@ -564,7 +549,12 @@ export default function Admin({ navigation }) {
       console.error("Error updating phone number:", error);
     }
   };
-
+  const [refreshing, setRefreshing] = useState(!1);
+  function onRefresh() {
+    console.log("yenilendi");
+    setRefreshing(!0);
+    setRefreshing(!1);
+  }
   return (
     <SafeAreaView>
       <View
@@ -633,6 +623,13 @@ export default function Admin({ navigation }) {
             <FlatList
               data={data}
               renderItem={Item}
+              refreshControl={
+                <RefreshControl
+                  refreshing={refreshing}
+                  onRefresh={onRefresh}
+                  tintColor="#F8852D"
+                />
+              }
               keyExtractor={(item) => item.id}
               style={{ flexGrow: 1 }}
             />
@@ -650,9 +647,7 @@ export default function Admin({ navigation }) {
                 top: height - 180,
               }}
             >
-            
               <View style={{ width: width }}>
-              
                 <Text style={styles.editText2}>²°²³</Text>
               </View>
             </View>

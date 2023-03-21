@@ -184,7 +184,16 @@ export default function ChooseBarber({ route, navigation }) {
               Select Barber
             </Text>
           </View>
-          <FlatList data={berber} renderItem={Item} />
+          <FlatList data={berber} renderItem={Item}
+          style={{marginBottom:50}} 
+                          refreshControl={
+                <RefreshControl
+                  refreshing={refreshing}
+                  onRefresh={onRefresh}
+                  tintColor="#F8852D"
+                />
+              }
+          />
         </View>
       </SafeAreaView>
     </>

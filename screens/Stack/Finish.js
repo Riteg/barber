@@ -67,6 +67,7 @@ export default function Finish({ route, navigation }) {
     });
 
   const [fullname, setFullname] = React.useState("");
+  const [suggests, setSuggests] = React.useState("");
   const [customerimage, setCustomerImage] = React.useState("");
   const [servisler, setServisler] = React.useState("");
   const barberAppointmentsCollection = firebase
@@ -92,6 +93,7 @@ export default function Finish({ route, navigation }) {
         barberPhoto: barberPhoto,
         barberExpo: barberExpo,
         expoPushToken: expoPushToken,
+        suggests:suggests
         // other appointment details
       })
       .then((docRef) => {
@@ -141,7 +143,6 @@ export default function Finish({ route, navigation }) {
     querySnapshot.forEach((doc) => {
       appointments.push(doc.data());
     });
-    console.log("Appointments for barber:", appointments);
   });
 
   return (
@@ -176,7 +177,7 @@ export default function Finish({ route, navigation }) {
             style={{
               flexDirection: "column",
               marginTop: 10,
-              height: height - 150,
+              height: height - 250,
               borderColor: "#181818",
               backgroundColor: "#2d2d2d",
               borderWidth: 3,
@@ -273,8 +274,10 @@ export default function Finish({ route, navigation }) {
             </View>
             <View
               style={{
-                justifyContent: "center",
-                alignContent: "center",
+                height:height-220,
+                flexDirection:"column",
+                justifyContent: "flex-start",
+                alignContent: "flex-start",
                 alignSelf: "flex-start",
               }}
             >
@@ -371,12 +374,13 @@ export default function Finish({ route, navigation }) {
                 <TextInput
                   style={styles.input}
                   placeholder="Add Your Extra Suggestions"
+                  onChangeText={(suggests) => setSuggests(suggests)}
                   placeholderTextColor={"#909090"}
                 />
               </View>
-            </View>
+              <View style={{justifyContent:"flex-end"}}>
             <TouchableOpacity
-              style={{ marginTop: 0 }}
+              style={{ justifyContent:"flex-end" }}
               onPress={handleOkey}
             >
               <View
@@ -403,6 +407,9 @@ export default function Finish({ route, navigation }) {
                 </Text>
               </View>
             </TouchableOpacity>
+            </View>
+            </View>
+
           </View>
         </View>
       </SafeAreaView>

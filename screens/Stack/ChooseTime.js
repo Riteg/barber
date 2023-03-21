@@ -63,13 +63,9 @@ LocaleConfig.locales["en"] = {
 };
 LocaleConfig.defaultLocale = "en";
 export default function ChooseTime({ route, navigation }) {
-  const data = [
-    { id: "1", times: ["08:00 AM", "08:30 AM", "09:00 AM", "09:30 AM"] },
-    { id: "2", times: ["10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM"] },
-    { id: "3", times: ["00:00 AM", "01:00 AM", "01:30 AM", "02:00 AM"] },
-    { id: "4", times: ["02:30 AM", "03:00 AM", "03:30 AM", "04:00 AM"] },
-  ];
+  const [data, setData] = useState("");
 
+  
   const [selectedButtonIndex, setSelectedButtonIndex] = useState(null);
   const [hour, setHour] = useState("");
 
@@ -89,6 +85,26 @@ export default function ChooseTime({ route, navigation }) {
     }
   };
 
+  useEffect(() => {
+    const unsubscribe = firebase
+      .firestore()
+      .collection("times")
+      .orderBy("id")
+      .onSnapshot((querySnapshot) => {
+        const userData = [];
+        querySnapshot.forEach((doc) => {
+          userData.push(doc.data());
+        });
+        setData(userData)
+      });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [userId, barberId]);
+
+
+
   const [currentDate, setCurrentDate] = useState(new Date().toUTCString());
   const currentDate2 = new Date();
   const minDate = currentDate2.toISOString().split("T")[0];
@@ -98,6 +114,13 @@ export default function ChooseTime({ route, navigation }) {
     }, 1000);
     return () => clearInterval(interval);
   }, []);
+
+
+
+
+
+
+
   const [check3, setCheck3] = useState(false);
   const userId = firebase.auth().currentUser.uid;
   const { docum } = route.params;
@@ -268,7 +291,7 @@ const styles = StyleSheet.create({
     marginBottom: 0,
   },
   container2: {
-    height: "45%",
+    height: "42%",
   },
   selected: {
     backgroundColor: "red",
@@ -280,6 +303,8 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     width: width,
     height: 45,
+    position:"absolute",
+    bottom:50,
     backgroundColor: "#d90",
   },
   buttontitle: {
@@ -332,7 +357,7 @@ const styles = StyleSheet.create({
   },
   barberbutton2: {
     textAlign: "center",
-    marginVertical: 10,
+    marginBottom:5,
     color: "#fff",
   },
   filterBar: {
