@@ -11,19 +11,27 @@ import {
   TextInput,
 } from "react-native";
 import { AntDesign, MaterialIcons, Ionicons } from "@expo/vector-icons";
-
+import * as Notifications from 'expo-notifications';
 import { firebase } from "../../config";
 const width = Dimensions.get("window").width;
 const height = Dimensions.get("window").height;
 const { width: screenWidth } = Dimensions.get("window");
 
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+  }),
+});
 export default function Finish({ route, navigation }) {
   const [check3, setCheck3] = useState(false);
   const userId = firebase.auth().currentUser.uid;
   const { docum } = route.params;
   const { barberId } = route.params;
   const { barber } = route.params;
-  const { formatted, totalLocation,expoPushToken,barberExpo } = route.params;
+  const { formatted, totalLocation, expoPushToken, barberExpo } = route.params;
   const { barberPhoto } = route.params;
   const { time } = route.params;
   const { hour } = route.params;
@@ -82,8 +90,8 @@ export default function Finish({ route, navigation }) {
         customerimage: customerimage,
         docId: "",
         barberPhoto: barberPhoto,
-        barberExpo:barberExpo,
-        expoPushToken:expoPushToken,
+        barberExpo: barberExpo,
+        expoPushToken: expoPushToken,
         // other appointment details
       })
       .then((docRef) => {
@@ -98,7 +106,7 @@ export default function Finish({ route, navigation }) {
           .doc(docRef.id);
 
         barberAppointmentsCollection2.update({ docId: docRef.id });
-
+        sendNotification2(barberExpo);
         navigation.navigate("ChooseService");
       })
       .catch((error) => {
@@ -107,22 +115,21 @@ export default function Finish({ route, navigation }) {
   };
 
   const sendNotification2 = async (barberExpo) => {
-
-    fetch('https://exp.host/--/api/v2/push/send', {
-method: 'POST',
-headers: {
-  Accept: 'application/json',
-  'Accept-Encoding': 'gzip, deflate',
-  'Content-Type': 'application/json',
-},
-body: JSON.stringify({
-  to: barberExpo,
-  data: { extraData: 'Some data' },
-  title: `User ${fullname} Sent Request.`,
-  body: `For ${time} ${hour}`,
-}),
-})
-    }
+    fetch("https://exp.host/--/api/v2/push/send", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Accept-Encoding": "gzip, deflate",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        to: barberExpo,
+        data: { extraData: "Some data" },
+        title: `User ${fullname} Sent Request.`,
+        body: `For ${time} ${hour}`,
+      }),
+    });
+  };
   const barberAppointmentsQuery = barberAppointmentsCollection.where(
     "barberId",
     "==",
@@ -368,9 +375,9 @@ body: JSON.stringify({
                 />
               </View>
             </View>
-            <TouchableOpacity style={{ marginTop: 0 }} onPress={handleOkey}
-             onPressIn={() => sendNotification2(barberExpo)}
-            
+            <TouchableOpacity
+              style={{ marginTop: 0 }}
+              onPress={handleOkey}
             >
               <View
                 style={{

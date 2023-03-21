@@ -3,6 +3,7 @@
     "name": "VahitsBarber",
     "slug": "barber",
     "version": "1.0.3",
+    "useNextNotificationsApi":true ,
     "runtimeVersion": {
       "policy": "sdkVersion"
     },

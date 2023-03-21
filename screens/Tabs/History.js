@@ -6,10 +6,7 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
-  TextInput,
   TouchableHighlight,
-  ScrollView,
-  ViewComponent,
 } from "react-native";
 import React from "react";
 import { useEffect, useState, useMemo } from "react";
@@ -19,17 +16,16 @@ import {
   Ionicons,
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
-import { Tab, Text, TabView, ListItem, Avatar, Image } from "@rneui/themed";
+import { Tab, Text, TabView, Image } from "@rneui/themed";
 import Appointments from "./Appointments";
 import CustomerAppointments from "./CustomerAppointments";
-import * as Permissions from 'expo-permissions';
-import * as Notifications from 'expo-notifications';
+import * as Notifications from "expo-notifications";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
-    shouldPlaySound: false,
-    shouldSetBadge: false,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
   }),
 });
 
@@ -37,21 +33,6 @@ const width = Dimensions.get("window").width;
 const height = Dimensions.get("window").height;
 
 export default function History({ navigation }) {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   const handleDelete = async (docId) => {
     try {
       const docRef = firebase
@@ -272,7 +253,7 @@ export default function History({ navigation }) {
           userData.push(doc.data());
         });
         setBarberAcceptedData(userData);
-        
+
         if (userData.length > 0) {
           const firstUserData = userData[0];
           const barber = firstUserData.barber;
@@ -319,236 +300,48 @@ export default function History({ navigation }) {
     setBarber(barber);
     setBarberPhoto(barberPhoto);
   };
-  function Item(props) {
-    return (
-      <View
-        style={{
-          flexDirection: "column",
-          marginTop: 10,
-          height: 200,
-          borderColor: "#181818",
-          backgroundColor: "#2d2d2d",
-          borderWidth: 3,
-          borderRadius: 15,
-        }}
-      >
-        <View
-          style={{
-            flexDirection: "column",
-            justifyContent: "space-evenly",
-            height: 50,
-            width: "98%",
-            paddingLeft: "2%",
-            borderRadius: 15,
-          }}
-        >
-          <View
-            style={{
-              flexDirection: "row",
-              alignContent: "center",
-              height: 40,
-              alignSelf: "center",
-              backgroundColor: "#5a5a5a",
-              borderRadius: 5,
-            }}
-          >
-            <View
-              style={{
-                width: "60%",
-                paddingTop: 2,
-                paddingLeft: 15,
-                flexDirection: "row",
-                justifyContent: "flex-start",
-                alignContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <AntDesign
-                name="calendar"
-                style={{ marginRight: 10 }}
-                size={24}
-                color="white"
-              />
-              <Text style={{ color: "white", fontWeight: "700", fontSize: 18 }}>
-                {props.item.time}
-              </Text>
-            </View>
-            <View
-              style={{
-                width: "40%",
-                flexDirection: "row",
-                justifyContent: "flex-start",
-                alignContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <View
-                style={{ width: "40%", flexDirection: "row", paddingTop: 0 }}
-              >
-                <AntDesign
-                  name="clockcircleo"
-                  style={{ marginLeft: 25 }}
-                  size={24}
-                  color="white"
-                />
-              </View>
-              <View
-                style={{ width: "60%", flexDirection: "row", paddingTop: 0 }}
-              >
-                <Text
-                  style={{
-                    color: "white",
-                    fontWeight: "700",
-                    marginTop: 0,
-                    fontSize: 16,
-                    textAlign: "center",
-                  }}
-                >
-                  {props.item.hour}
-                </Text>
-              </View>
-            </View>
-          </View>
-        </View>
-        <View>
-          <View style={{ flexDirection: "row" }}>
-            <Image
-              source={{ uri: props.item.barberphoto }}
-              style={{
-                marginRight: 15,
-                marginLeft: 15,
-                width: 25,
-                height: 25,
-                borderColor: "#fff",
-                borderWidth: 1,
-                resizeMode: "contain",
-                alignSelf: "center",
-                alignContent: "center",
-                alignItems: "center",
-                borderRadius: 50,
-              }}
-            />
-            <Text
-              style={{
-                color: "white",
-                fontWeight: "700",
-                fontSize: 11,
-                marginTop: 5,
-              }}
-            >
-              {props.item.barber}
-            </Text>
-          </View>
-          <View style={{ flexDirection: "row" }}>
-            <Ionicons
-              name="cut"
-              style={{ marginRight: 15, marginLeft: 15 }}
-              size={24}
-              color="white"
-            />
-            <Text
-              style={{
-                color: "white",
-                fontWeight: "700",
-                fontSize: 11,
-                marginTop: 5,
-              }}
-            >
-              {props.item.service}
-            </Text>
-          </View>
-          <View style={{ flexDirection: "row" }}>
-            <MaterialCommunityIcons
-              name="timetable"
-              style={{ marginRight: 15, marginLeft: 15 }}
-              size={24}
-              color="white"
-            />
-            <Text
-              style={{
-                color: "white",
-                fontWeight: "700",
-                fontSize: 11,
-                marginTop: 5,
-              }}
-            >
-              {props.item.totalLocation} mins.
-            </Text>
-          </View>
-        </View>
-        <TouchableOpacity onPress={() => navigation.navigate("ChooseService")}>
-          <View
-            style={{
-              flexDirection: "column",
-              alignItems: "center",
-              height: 40,
-              width: "96%",
-              marginLeft: "2%",
-              borderRadius: 15,
-              backgroundColor: "#5a5a5a",
-              borderColor: "#aaa",
-              borderWidth: 2,
-              marginTop: 10,
-            }}
-          >
-            <Text
-              style={{
-                color: "white",
-                fontWeight: "700",
-                fontSize: 16,
-                marginTop: 5,
-              }}
-            >
-              Repeat Appointment
-            </Text>
-          </View>
-        </TouchableOpacity>
-      </View>
-    );
-  }
+
   function Item2(props) {
-
     const sendNotification = async (expoPushToken, barber, time, hour) => {
-      console.log("66",expoPushToken)
-      console.log("66",barber)
-      console.log("66",time)
-      console.log("66",hour)
-      fetch('https://exp.host/--/api/v2/push/send', {
-  method: 'POST',
-  headers: {
-    Accept: 'application/json',
-    'Accept-Encoding': 'gzip, deflate',
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify({
-    to: expoPushToken,
-    data: { extraData: 'Some data' },
-    title: `Barber ${barber} Accepted Your Appointment`,
-    body: `Appointment will be ${time} ${hour}`,
-  }),
-})
-      }
-      const sendNotification2 = async (expoPushToken, barber, time, hour) => {
-        console.log("66",expoPushToken)
-        console.log("66",barber)
-        console.log("66",time)
-        console.log("66",hour)
-        fetch('https://exp.host/--/api/v2/push/send', {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Accept-Encoding': 'gzip, deflate',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      to: expoPushToken,
-      data: { extraData: 'Some data' },
-      title: `Barber ${barber} Rejected Your Appointment`,
-      body: `Please make new Appointment for ${time} ${hour}`,
-    }),
-  })
-        }
-
+      console.log("66", expoPushToken);
+      console.log("66", barber);
+      console.log("66", time);
+      console.log("66", hour);
+      fetch("https://exp.host/--/api/v2/push/send", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Accept-Encoding": "gzip, deflate",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          to: expoPushToken,
+          data: { extraData: "Some data" },
+          title: `Barber ${barber} Accepted Your Appointment`,
+          body: `Appointment will be ${time} ${hour}`,
+        }),
+      });
+    };
+    const sendNotification2 = async (expoPushToken, barber, time, hour) => {
+      console.log("66", expoPushToken);
+      console.log("66", barber);
+      console.log("66", time);
+      console.log("66", hour);
+      fetch("https://exp.host/--/api/v2/push/send", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Accept-Encoding": "gzip, deflate",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          to: expoPushToken,
+          data: { extraData: "Some data" },
+          title: `Barber ${barber} Rejected Your Appointment`,
+          body: `Please make new Appointment for ${time} ${hour}`,
+        }),
+      });
+    };
 
     return (
       <View
@@ -710,7 +503,14 @@ export default function History({ navigation }) {
           <TouchableOpacity
             style={{ width: width / 2 - 10, marginLeft: 8 }}
             onPress={() => handleOkey(props.item.docId)}
-            onPressIn={() => sendNotification(props.item.expoPushToken,props.item.barber,props.item.time,props.item.hour)}
+            onPressIn={() =>
+              sendNotification(
+                props.item.expoPushToken,
+                props.item.barber,
+                props.item.time,
+                props.item.hour
+              )
+            }
           >
             <View
               style={{
@@ -741,8 +541,14 @@ export default function History({ navigation }) {
           <TouchableHighlight
             style={{ width: width / 2 - 10 }}
             onPress={() => handleDelete(props.item.docId)}
-            onPressIn={() => sendNotification2(props.item.expoPushToken,props.item.barber,props.item.time,props.item.hour)}
-
+            onPressIn={() =>
+              sendNotification2(
+                props.item.expoPushToken,
+                props.item.barber,
+                props.item.time,
+                props.item.hour
+              )
+            }
           >
             <View
               style={{
@@ -774,166 +580,7 @@ export default function History({ navigation }) {
       </View>
     );
   }
-  function Item3(props) {
-    return (
-      <View
-        style={{
-          flexDirection: "column",
-          marginTop: 10,
-          height: 150,
-          borderColor: "#181818",
-          backgroundColor: "#2d2d2d",
-          borderWidth: 3,
-          borderRadius: 15,
-        }}
-      >
-        <View
-          style={{
-            flexDirection: "column",
-            justifyContent: "space-evenly",
-            height: 50,
-            width: "98%",
-            paddingLeft: "2%",
-            borderRadius: 15,
-          }}
-        >
-          <View
-            style={{
-              flexDirection: "row",
-              alignContent: "center",
-              height: 40,
-              alignSelf: "center",
-              backgroundColor: "#5a5a5a",
-              borderRadius: 5,
-            }}
-          >
-            <View
-              style={{
-                width: "60%",
-                paddingTop: 2,
-                paddingLeft: 15,
-                flexDirection: "row",
-                justifyContent: "flex-start",
-                alignContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <AntDesign
-                name="calendar"
-                style={{ marginRight: 10 }}
-                size={24}
-                color="white"
-              />
-              <Text style={{ color: "white", fontWeight: "700", fontSize: 18 }}>
-                {props.item.time}
-              </Text>
-            </View>
-            <View
-              style={{
-                width: "40%",
-                flexDirection: "row",
-                justifyContent: "flex-start",
-                alignContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <View
-                style={{ width: "40%", flexDirection: "row", paddingTop: 0 }}
-              >
-                <AntDesign
-                  name="clockcircleo"
-                  style={{ marginLeft: 25 }}
-                  size={24}
-                  color="white"
-                />
-              </View>
-              <View
-                style={{ width: "60%", flexDirection: "row", paddingTop: 0 }}
-              >
-                <Text
-                  style={{
-                    color: "white",
-                    fontWeight: "700",
-                    marginTop: 0,
-                    fontSize: 16,
-                    textAlign: "center",
-                  }}
-                >
-                  {props.item.hour}
-                </Text>
-              </View>
-            </View>
-          </View>
-        </View>
-        <View>
-          <View style={{ flexDirection: "row" }}>
-            <Image
-              source={{ uri: props.item.customerimage }}
-              style={{
-                marginRight: 15,
-                marginLeft: 15,
-                width: 25,
-                height: 25,
-                borderColor: "#fff",
-                borderWidth: 1,
-                resizeMode: "contain",
-                alignSelf: "center",
-                alignContent: "center",
-                alignItems: "center",
-                borderRadius: 50,
-              }}
-            />
-            <Text
-              style={{
-                color: "white",
-                fontWeight: "700",
-                fontSize: 11,
-                marginTop: 5,
-              }}
-            >
-              {props.item.customername}
-            </Text>
-          </View>
-          <View style={{ flexDirection: "row" }}>
-            <Ionicons
-              name="cut"
-              style={{ marginRight: 15, marginLeft: 15 }}
-              size={24}
-              color="white"
-            />
-            <Text
-              style={{
-                color: "white",
-                fontWeight: "700",
-                fontSize: 11,
-                marginTop: 5,
-              }}
-            >
-              {props.item.service}
-            </Text>
-          </View>
-          <View style={{ flexDirection: "row" }}>
-            <MaterialCommunityIcons
-              name="timetable"
-              style={{ marginRight: 15, marginLeft: 15 }}
-              size={24}
-              color="white"
-            />
-            <Text
-              style={{
-                color: "white",
-                fontWeight: "700",
-                fontSize: 11,
-                marginTop: 5,
-              }}
-            >
-              {props.item.totalLocation} mins.
-            </Text>
-          </View>
-        </View>
-      </View>
-    );
-  }
+
   let barberVal = null;
   const [barberValue, setBarberValue] = useState(null);
 
@@ -956,7 +603,7 @@ export default function History({ navigation }) {
       <SafeAreaView style={{ flex: 1, backgroundColor: "#141313" }}>
         {barberValue === "yes" ? (
           <>
-          <View
+            <View
               style={{
                 flexDirection: "row",
                 backgroundColor: "#181818",
@@ -975,7 +622,7 @@ export default function History({ navigation }) {
                   alignContent: "center",
                 }}
               >
-                Appointment History
+                Barber Appointments
               </Text>
             </View>
 
@@ -984,7 +631,6 @@ export default function History({ navigation }) {
               containerStyle={{
                 height: 50,
                 backgroundColor: "#161616",
-                borderTopColor: "#999",
                 borderTopWidth: 0.2,
               }}
               onChange={(e) => setIndex(e)}
@@ -994,15 +640,24 @@ export default function History({ navigation }) {
               }}
               variant="primary"
             >
-              <Tab.Item title="Appointments" titleStyle={{ fontSize: 12 }} />
-              <Tab.Item title="Customers" titleStyle={{ fontSize: 12 }} />
-              <Tab.Item title="Requests" titleStyle={{ fontSize: 12 }} />
+              <Tab.Item
+                title="Appointments"
+                titleStyle={{ fontSize: width < 375 ? 8 : 10 }}
+              />
+              <Tab.Item
+                title="Customers"
+                titleStyle={{ fontSize: width < 375 ? 8 : 10 }}
+              />
+              <Tab.Item
+                title="Requests"
+                titleStyle={{ fontSize: width < 375 ? 8 : 10 }}
+              />
             </Tab>
-            
+
             <TabView
               value={index}
               onChange={setIndex}
-              animationType="timing"
+              animationType="spring"
               disableSwipe={true}
             >
               <TabView.Item
@@ -1015,16 +670,7 @@ export default function History({ navigation }) {
                     backgroundColor: "#141414",
                   }}
                 >
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      backgroundColor: "#181818",
-                      height: 20,
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                    }}
-                  ></View>
-                  <View style={{ marginBottom: 50 }}>
+                  <View>
                     <Appointments />
                   </View>
                 </View>
@@ -1039,16 +685,7 @@ export default function History({ navigation }) {
                     backgroundColor: "#141414",
                   }}
                 >
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      backgroundColor: "#181818",
-                      height: 20,
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                    }}
-                  ></View>
-                  <View style={{ marginBottom: 50 }}>
+                  <View>
                     <CustomerAppointments />
                   </View>
                 </View>
@@ -1063,15 +700,6 @@ export default function History({ navigation }) {
                     backgroundColor: "#141414",
                   }}
                 >
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      backgroundColor: "#181818",
-                      height: 20,
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                    }}
-                  ></View>
                   <View style={{ marginBottom: 50 }}>
                     <Text
                       style={{
@@ -1086,6 +714,13 @@ export default function History({ navigation }) {
                     <FlatList
                       data={barberappointment}
                       renderItem={Item2}
+                      refreshControl={
+                        <RefreshControl
+                          refreshing={refreshing}
+                          onRefresh={onRefresh}
+                          tintColor="#F8852D"
+                        />
+                      }
                       style={{ marginBottom: 70 }}
                     />
                   </View>
