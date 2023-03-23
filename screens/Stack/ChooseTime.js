@@ -66,7 +66,6 @@ export default function ChooseTime({ route, navigation }) {
   const [data, setData] = useState("");
   const [sundayData, setSundayData] = useState("");
 
-  
   const [selectedButtonIndex, setSelectedButtonIndex] = useState(null);
   const [hour, setHour] = useState("");
 
@@ -96,7 +95,7 @@ export default function ChooseTime({ route, navigation }) {
         querySnapshot.forEach((doc) => {
           userData.push(doc.data());
         });
-        setData(userData)
+        setData(userData);
       });
 
     return () => {
@@ -113,15 +112,13 @@ export default function ChooseTime({ route, navigation }) {
         querySnapshot.forEach((doc) => {
           userData.push(doc.data());
         });
-        setSundayData(userData)
-        console.log("31",sundayData)
+        setSundayData(userData);
       });
 
     return () => {
       unsubscribe();
     };
   }, [userId, barberId]);
-
 
   const [currentDate, setCurrentDate] = useState(new Date().toUTCString());
   const currentDate2 = new Date();
@@ -133,18 +130,12 @@ export default function ChooseTime({ route, navigation }) {
     return () => clearInterval(interval);
   }, []);
 
-
-
-
-
-
-
   const [check3, setCheck3] = useState(false);
   const userId = firebase.auth().currentUser.uid;
   const { docum } = route.params;
   const { barberId } = route.params;
   const { formatted, totalLocation } = route.params;
-  const { barberPhoto,expoPushToken,barberExpo } = route.params;
+  const { barberPhoto, expoPushToken, barberExpo } = route.params;
   const { barber } = route.params;
   const berbersID = barberId;
   const docId = docum;
@@ -274,23 +265,43 @@ export default function ChooseTime({ route, navigation }) {
               marginBottom: 20,
             }}
           >
-            <FlatList
-              data={new Date().getDay() === 0 ? sundayData : data}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => (
-                <View style={{ flexDirection: "row" }}>
-                  {item.times.map((time) => (
-                    <TouchableOpacity
-                      key={time}
-                      style={buttonStyle(time, selectedButtonIndex)}
-                      onPress={() => handlePress(time)}
-                    >
-                      <Text style={styles.text}>{time}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              )}
-            />
+            {new Date(time).getDay() === 0 ? (
+              <FlatList
+                data={sundayData}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
+                  <View style={{ flexDirection: "row" }}>
+                    {item.times.map((time) => (
+                      <TouchableOpacity
+                        key={time}
+                        style={buttonStyle(time, selectedButtonIndex)}
+                        onPress={() => handlePress(time)}
+                      >
+                        <Text style={styles.text}>{time}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                )}
+              />
+            ) : (
+              <FlatList
+                data={data}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
+                  <View style={{ flexDirection: "row" }}>
+                    {item.times.map((time) => (
+                      <TouchableOpacity
+                        key={time}
+                        style={buttonStyle(time, selectedButtonIndex)}
+                        onPress={() => handlePress(time)}
+                      >
+                        <Text style={styles.text}>{time}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                )}
+              />
+            )}
           </View>
           <TouchableOpacity style={styles.button2} onPress={handleSubmit}>
             <Text style={styles.barberbutton2}>Next</Text>
@@ -321,8 +332,8 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     width: width,
     height: 45,
-    position:"absolute",
-    bottom:50,
+    position: "absolute",
+    bottom: 50,
     backgroundColor: "#d90",
   },
   buttontitle: {
@@ -375,7 +386,7 @@ const styles = StyleSheet.create({
   },
   barberbutton2: {
     textAlign: "center",
-    marginBottom:5,
+    marginBottom: 5,
     color: "#fff",
   },
   filterBar: {

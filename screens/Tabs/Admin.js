@@ -162,7 +162,6 @@ export default function Admin({ navigation }) {
         const appointmentData = appointmentDoc.data();
         allUserData.push(appointmentData);
       });
-      console.log(allUserData);
       setBarberAppointment(allUserData);
       if (allUserData.length > 0) {
         const firstUserData = allUserData[0];
@@ -227,10 +226,6 @@ export default function Admin({ navigation }) {
       );
     };
     const sendNotification = async (expoPushToken, barber, time, hour) => {
-      console.log("66", expoPushToken);
-      console.log("66", barber);
-      console.log("66", time);
-      console.log("66", hour);
       fetch("https://exp.host/--/api/v2/push/send", {
         method: "POST",
         headers: {
@@ -247,10 +242,6 @@ export default function Admin({ navigation }) {
       });
     };
     const sendNotification2 = async (expoPushToken, barber, time, hour) => {
-      console.log("66", expoPushToken);
-      console.log("66", barber);
-      console.log("66", time);
-      console.log("66", hour);
       fetch("https://exp.host/--/api/v2/push/send", {
         method: "POST",
         headers: {
@@ -1047,7 +1038,6 @@ export default function Admin({ navigation }) {
   const handleSubmit = async (phone) => {
     try {
       setPhone(phonenew);
-      console.log(userId);
       const collectionRef = firebase
         .firestore()
         .collection("users")

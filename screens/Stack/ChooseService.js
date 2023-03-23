@@ -53,7 +53,6 @@ async function registerForPushNotificationsAsync() {
       return;
     }
     token = (await Notifications.getExpoPushTokenAsync()).data;
-    console.log(token);
   } else {
     alert("Must use physical device for Push Notifications");
   }
@@ -80,7 +79,6 @@ export default function ChooseService({ props, navigation }) {
     registerForPushNotificationsAsync().then((token) =>
       setExpoPushToken(token)
     );
-    console.log("33", expoPushToken);
     notificationListener.current =
       Notifications.addNotificationReceivedListener((notification) => {
         setNotification(notification);
@@ -88,7 +86,6 @@ export default function ChooseService({ props, navigation }) {
 
     responseListener.current =
       Notifications.addNotificationResponseReceivedListener((response) => {
-        console.log("31", response);
       });
 
     return () => {
@@ -149,7 +146,6 @@ export default function ChooseService({ props, navigation }) {
   const handleSubmit = async () => {
     const newDocRef = collectionRef.doc();
     const formatted = await formattedServices;
-    console.log("formattedServices:", formatted);
     if (!formatted.trim()) {
       alert("Please Select Service");
       return;
