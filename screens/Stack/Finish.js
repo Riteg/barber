@@ -84,6 +84,7 @@ export default function Finish({ route, navigation }) {
         totalLocation: totalLocation,
         time: time,
         hour: hour,
+        barberId:barberId,
         service: servisler,
         currentDate: currentDate,
         barber: barber,
@@ -108,7 +109,7 @@ export default function Finish({ route, navigation }) {
           .doc(docRef.id);
 
         barberAppointmentsCollection2.update({ docId: docRef.id });
-        sendNotification2(barberExpo);
+        sendNotification2(fullname, barber, time, hour);
         navigation.navigate("ChooseService");
       })
       .catch((error) => {
@@ -116,22 +117,55 @@ export default function Finish({ route, navigation }) {
       });
   };
 
-  const sendNotification2 = async (barberExpo) => {
-    fetch("https://exp.host/--/api/v2/push/send", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Accept-Encoding": "gzip, deflate",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        to: barberExpo,
-        data: { extraData: "Some data" },
-        title: `User ${fullname} Sent Request.`,
-        body: `For ${time} ${hour}`,
-      }),
+  const [admins, setAdmins] = React.useState("");
+  const [adminexpo, setAdminExpo] = useState([]);
+  
+  useEffect(() => {
+    const unsubscribe = firebase
+      .firestore()
+      .collection("users")
+      .where("admin", "==", "evet")
+      .onSnapshot((querySnapshot) => {
+        const userData = [];
+        querySnapshot.forEach((doc) => {
+          userData.push(doc.data());
+        });
+        setAdmins(userData);
+        const adminex = userData.map((user) => user.expoPushToken);
+        setAdminExpo(adminex);
+        
+      });
+  
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+  console.log(adminexpo)
+  const sendNotification2 = async (fullname, barber, time, hour) => {
+    console.log("66", fullname);
+    console.log("66", barber);
+    console.log("66", time);
+    console.log("66", hour);
+    const notifications = adminexpo.map((token) => {
+      return fetch("https://exp.host/--/api/v2/push/send", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Accept-Encoding": "gzip, deflate",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          to: token,
+          data: { extraData: "Some data" },
+          title: `User ${fullname} Sent Request.`,
+          body: `For  Barber ${barber} on ${time} ${hour}`,
+        }),
+      });
     });
+    await Promise.all(notifications);
   };
+  
+  
   const barberAppointmentsQuery = barberAppointmentsCollection.where(
     "barberId",
     "==",

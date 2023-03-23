@@ -64,6 +64,7 @@ LocaleConfig.locales["en"] = {
 LocaleConfig.defaultLocale = "en";
 export default function ChooseTime({ route, navigation }) {
   const [data, setData] = useState("");
+  const [sundayData, setSundayData] = useState("");
 
   
   const [selectedButtonIndex, setSelectedButtonIndex] = useState(null);
@@ -102,7 +103,24 @@ export default function ChooseTime({ route, navigation }) {
       unsubscribe();
     };
   }, [userId, barberId]);
+  useEffect(() => {
+    const unsubscribe = firebase
+      .firestore()
+      .collection("sundaytimes")
+      .orderBy("id")
+      .onSnapshot((querySnapshot) => {
+        const userData = [];
+        querySnapshot.forEach((doc) => {
+          userData.push(doc.data());
+        });
+        setSundayData(userData)
+        console.log("31",sundayData)
+      });
 
+    return () => {
+      unsubscribe();
+    };
+  }, [userId, barberId]);
 
 
   const [currentDate, setCurrentDate] = useState(new Date().toUTCString());
@@ -257,7 +275,7 @@ export default function ChooseTime({ route, navigation }) {
             }}
           >
             <FlatList
-              data={data}
+              data={new Date().getDay() === 0 ? sundayData : data}
               keyExtractor={(item) => item.id}
               renderItem={({ item }) => (
                 <View style={{ flexDirection: "row" }}>

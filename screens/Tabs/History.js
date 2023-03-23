@@ -39,7 +39,7 @@ export default function History({ navigation }) {
       const docRef = firebase
         .firestore()
         .collection("users")
-        .doc(userId)
+        .doc(barberId)
         .collection("Barber_Appointments")
         .doc(docId);
       await docRef.delete();
@@ -82,6 +82,7 @@ export default function History({ navigation }) {
   const [barberaccepteddata, setBarberAcceptedData] = useState("");
   const [barberPhoto, setBarberPhoto] = useState("");
   const [totalLocation, setTotalLocation] = useState("");
+  const [barberId, setBarberId] = useState("");
   const [uidd, setUidd] = useState("");
   const handleOkey = async (docId) => {
     const userId2 = firebase.auth().currentUser.uid;
@@ -89,7 +90,7 @@ export default function History({ navigation }) {
       const barberAccepted = firebase
         .firestore()
         .collection("users")
-        .doc(userId2)
+        .doc(barberId)
         .collection("Barber_Accepted_Appointments");
       const docRef = await barberAccepted.add({
         userId: accepteduserid,
@@ -107,12 +108,12 @@ export default function History({ navigation }) {
         // other appointment details
       });
 
-      console.log("Appointment added with ID:", docRef.id);
+      console.log("Appointment added with ID for barber:", docRef.id);
       setberberAcceptedDoc(docRef.id);
       const barberAppointmentsCollection2 = firebase
         .firestore()
         .collection("users")
-        .doc(userId)
+        .doc(barberId)
         .collection("Barber_Accepted_Appointments")
         .doc(docRef.id);
 
@@ -140,7 +141,7 @@ export default function History({ navigation }) {
         totalLocation: totalLocation,
         // other appointment details
       });
-      console.log("Appointment added with ID:", docRef2.id);
+      console.log("Appointment added with ID for User:", docRef2.id);
       setberberAcceptedDoc2(docRef2.id);
       const barberAppointmentsCollection3 = firebase
         .firestore()
@@ -157,7 +158,7 @@ export default function History({ navigation }) {
       const docRef = firebase
         .firestore()
         .collection("users")
-        .doc(userId)
+        .doc(barberId)
         .collection("Barber_Appointments")
         .doc(docId);
       await docRef.delete();
@@ -167,51 +168,50 @@ export default function History({ navigation }) {
   };
 
   useEffect(() => {
-    const unsubscribe = firebase
-      .firestore()
-      .collection("users")
-      .doc(userId)
-      .collection("Barber_Appointments")
-      .orderBy("time", "asc")
-      .onSnapshot((querySnapshot) => {
-        const userData = [];
-        querySnapshot.forEach((doc) => {
-          userData.push(doc.data());
-        });
-        setBarberAppointment(userData);
-        if (userData.length > 0) {
-          const firstUserData = userData[0];
-          const barber = firstUserData.barber;
-          setAcceptedBarber(barber || "");
-          const currentDate = firstUserData.currentDate;
-          setAcceptedCurrentDate(currentDate || "");
-          const customerimage = firstUserData.customerimage;
-          setAcceptedCustomerImage(customerimage || "");
-          const customername = firstUserData.customername;
-          setAcceptedCustomerName(customername || "");
-          const docId = firstUserData.docId;
-          setAcceptedDocId(docId || "");
-          const hour = firstUserData.hour;
-          setAcceptedHour(hour || "");
-          const service = firstUserData.service;
-          setAcceptedService(service || "");
-          const time = firstUserData.time;
-          setAcceptedTime(time || "");
-          const userId = firstUserData.userId;
-          setAcceptedUserId(userId || "");
-          const totalLocation = firstUserData.totalLocation;
-          setTotalLocation(totalLocation || "");
-          const barberPhoto = firstUserData.barberPhoto;
-          setBarberPhoto(barberPhoto || "");
-        }
-        // use callback function to set uidd once
-        userData.length > 0 && setUidd(userData[0].userId);
+    const unsubscribe = firebase.firestore().collectionGroup("Barber_Appointments").onSnapshot(querySnapshot => {
+      const allUserData = [];
+      querySnapshot.forEach(appointmentDoc => {
+        const appointmentData = appointmentDoc.data();
+        allUserData.push(appointmentData);
       });
-
+      console.log(allUserData);
+      setBarberAppointment(allUserData);
+      if (allUserData.length > 0) {
+        const firstUserData = allUserData[0];
+        const barber = firstUserData.barber;
+        setAcceptedBarber(barber || "");
+        const barberId = firstUserData.barberId;
+        setBarberId(barberId || "");
+        const currentDate = firstUserData.currentDate;
+        setAcceptedCurrentDate(currentDate || "");
+        const customerimage = firstUserData.customerimage;
+        setAcceptedCustomerImage(customerimage || "");
+        const customername = firstUserData.customername;
+        setAcceptedCustomerName(customername || "");
+        const docId = firstUserData.docId;
+        setAcceptedDocId(docId || "");
+        const hour = firstUserData.hour;
+        setAcceptedHour(hour || "");
+        const service = firstUserData.service;
+        setAcceptedService(service || "");
+        const time = firstUserData.time;
+        setAcceptedTime(time || "");
+        const userId = firstUserData.userId;
+        setAcceptedUserId(userId || "");
+        const totalLocation = firstUserData.totalLocation;
+        setTotalLocation(totalLocation || "");
+        const barberPhoto = firstUserData.barberPhoto;
+        setBarberPhoto(barberPhoto || "");
+        // use callback function to set uidd once
+        allUserData.length > 0 && setUidd(allUserData[0].userId);
+      }
+    }, error => console.log("Error fetching appointments data:", error));
     return () => {
       unsubscribe();
     };
-  }, [userId]);
+  }, []);
+  
+  
   const combinedData = [
     { title: "Last Appointment", data: [] },
     { title: "Old Appointment", data: [] },
@@ -615,6 +615,19 @@ export default function History({ navigation }) {
       barberVal = barberValue; // set the variable value inside the useEffect
     });
   }, []);
+  let adminval = null;
+  const [adminValue, setADminValue] = useState(null);
+
+  useEffect(() => {
+    const userId = firebase.auth().currentUser.uid;
+    const userRef = firebase.firestore().collection("users").doc(userId);
+    userRef.get().then((doc) => {
+      const userData = doc.data();
+      const admin = userData.admin;
+      setADminValue(admin);
+      adminval = adminValue; // set the variable value inside the useEffect
+    });
+  }, []);
 
   const [index, setIndex] = React.useState(0);
   if (hastaliklar) {
@@ -669,10 +682,6 @@ export default function History({ navigation }) {
                 title="Customers"
                 titleStyle={{ fontSize: width < 375 ? 8 : 10 }}
               />
-              <Tab.Item
-                title="Requests"
-                titleStyle={{ fontSize: width < 375 ? 8 : 10 }}
-              />
             </Tab>
 
             <TabView
@@ -711,42 +720,6 @@ export default function History({ navigation }) {
                   </View>
                 </View>
               </TabView.Item>
-              <TabView.Item
-                style={{ backgroundColor: "#181818", width: "100%" }}
-              >
-                <View
-                  style={{
-                    width: width,
-                    height: height,
-                    backgroundColor: "#141414",
-                  }}
-                >
-                  <View style={{ marginBottom: 50 }}>
-                    <Text
-                      style={{
-                        color: "white",
-                        fontWeight: "700",
-                        fontSize: 18,
-                        marginLeft: 15,
-                      }}
-                    >
-                      Waiting Appointments
-                    </Text>
-                    <FlatList
-                      data={barberappointment}
-                      renderItem={Item2}
-                      refreshControl={
-                        <RefreshControl
-                          refreshing={refreshing}
-                          onRefresh={onRefresh}
-                          tintColor="#F8852D"
-                        />
-                      }
-                      style={{ marginBottom: 130 }}
-                    />
-                  </View>
-                </View>
-              </TabView.Item>
             </TabView>
           </>
         ) : (
@@ -775,7 +748,7 @@ export default function History({ navigation }) {
                 Appointment History
               </Text>
             </View>
-            <View style={{ marginBottom: 50 }}>
+            <View style={{ marginBottom: -50 }}>
               <Appointments />
             </View>
           </View>

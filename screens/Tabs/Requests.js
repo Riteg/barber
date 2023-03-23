@@ -158,51 +158,55 @@ export default function Requests({ navigation }) {
   };
 
   useEffect(() => {
-    const unsubscribe = firebase
-      .firestore()
-      .collection("users")
-      .doc(userId)
-      .collection("Barber_Appointments")
-      .orderBy("time", "asc")
-      .onSnapshot((querySnapshot) => {
-        const userData = [];
-        querySnapshot.forEach((doc) => {
-          userData.push(doc.data());
-        });
-        setBarberAppointment(userData);
-        if (userData.length > 0) {
-          const firstUserData = userData[0];
-          const barber = firstUserData.barber;
-          setAcceptedBarber(barber || "");
-          const currentDate = firstUserData.currentDate;
-          setAcceptedCurrentDate(currentDate || "");
-          const customerimage = firstUserData.customerimage;
-          setAcceptedCustomerImage(customerimage || "");
-          const customername = firstUserData.customername;
-          setAcceptedCustomerName(customername || "");
-          const docId = firstUserData.docId;
-          setAcceptedDocId(docId || "");
-          const hour = firstUserData.hour;
-          setAcceptedHour(hour || "");
-          const service = firstUserData.service;
-          setAcceptedService(service || "");
-          const time = firstUserData.time;
-          setAcceptedTime(time || "");
-          const userId = firstUserData.userId;
-          setAcceptedUserId(userId || "");
-          const totalLocation = firstUserData.totalLocation;
-          setTotalLocation(totalLocation || "");
-          const barberPhoto = firstUserData.barberPhoto;
-          setBarberPhoto(barberPhoto || "");
+    let isMounted = true; // add a flag to track whether the component is mounted
+  
+    const fetchData = async () => {
+      try {
+        const usersSnapshot = await firebase.firestore().collection("users").get();
+  
+        const allUserData = [];
+        for (const userDoc of usersSnapshot.docs) {
+          const userId = userDoc.id;
+          const appointmentsSnapshot = await firebase.firestore().collection("users").doc(userId).collection("Barber_Appointments").get();
+  
+          const userData = appointmentsSnapshot.docs.map((doc) => doc.data());
+          allUserData.push({ userId, userData });
         }
-        // use callback function to set uidd once
-        userData.length > 0 && setUidd(userData[0].userId);
-      });
-
+  
+        if (isMounted) { // only update state if the component is mounted
+          setBarberAppointment(allUserData);
+  
+          if (allUserData.length > 0) {
+            const firstUserData = allUserData[0].userData[0];
+            setAcceptedBarber(firstUserData.barber || "");
+            setAcceptedCurrentDate(firstUserData.currentDate || "");
+            setAcceptedCustomerImage(firstUserData.customerimage || "");
+            setAcceptedCustomerName(firstUserData.customername || "");
+            setAcceptedDocId(firstUserData.docId || "");
+            setAcceptedHour(firstUserData.hour || "");
+            setAcceptedService(firstUserData.service || "");
+            setAcceptedTime(firstUserData.time || "");
+            setAcceptedUserId(firstUserData.userId || "");
+            setTotalLocation(firstUserData.totalLocation || "");
+            setBarberPhoto(firstUserData.barberPhoto || "");
+  
+            // use callback function to set uidd once
+            setUidd(allUserData[0].userId);
+          }
+        }
+      } catch (error) {
+        console.log("Error fetching data:", error);
+      }
+    };
+  
+    fetchData();
     return () => {
-      unsubscribe();
+      isMounted = false; // set the flag to false when the component is unmounted
     };
   }, [userId]);
+  console.log(barberaccepteddata)
+
+  
   const combinedData = [
     { title: "Waiting Appointments", data: [] },
   ];
