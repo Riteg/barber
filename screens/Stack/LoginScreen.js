@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/core'
 import * as React from 'react'
-import {useEffect} from "react";
-import { SafeAreaView, StyleSheet, Text,Button ,Dimensions,TextInput,Image, TouchableOpacity, View } from 'react-native'
+import { useEffect } from "react";
+import { SafeAreaView, StyleSheet, Text, Button, Dimensions, TextInput, Image, TouchableOpacity, View } from 'react-native'
 import { auth } from '../../firebase';
 import { AntDesign } from '@expo/vector-icons';
 import { firebase } from "../../config";
@@ -13,15 +13,6 @@ const height = Dimensions.get("window").height;
 WebBrowser.maybeCompleteAuthSession();
 
 export default function LoginScreen({ navigation }) {
-
-
-
-
-
-
-
-
-
   const [accessToken, setAccessToken] = React.useState(null);
   const [user, setUser] = React.useState(null);
   const [gemail, setGemail] = React.useState(null);
@@ -35,7 +26,7 @@ export default function LoginScreen({ navigation }) {
   });
 
   React.useEffect(() => {
-    if(response?.type === "success") {
+    if (response?.type === "success") {
       setAccessToken(response.authentication.accessToken);
       accessToken && fetchUserInfo();
     }
@@ -47,35 +38,35 @@ export default function LoginScreen({ navigation }) {
     })
     const userInfo = await response.json();
     const userSnapshot = await firebase
-            .firestore()
-            .collection("users")
-            .where("email", "==", userInfo.email)
-            .get();
+      .firestore()
+      .collection("users")
+      .where("email", "==", userInfo.email)
+      .get();
 
-            if (userSnapshot.size > 0) {
-              // User already exists, sign in
-              await firebase.auth().signInWithEmailAndPassword(userInfo.email, userInfo.id);
-            } else {
-              // User doesn't exist, sign up
-              await firebase.auth().createUserWithEmailAndPassword(userInfo.email, userInfo.id);
-      
-              // Send verification email
-              await firebase.auth().currentUser.sendEmailVerification({
-                handleCodeInApp: true,
-                url: "https://berber-2df5c.firebaseapp.com",
-              });
-      
-              // Save user info to Firestore
-              await firebase.firestore().collection("users").doc(firebase.auth().currentUser.uid).set({
-                fullname: `${userInfo.given_name} ${userInfo.family_name}`,
-                email: userInfo.email,
-                phone: "-",
-                password: userInfo.id,
-                image: userInfo.picture,
-                admin: "",
-                barber: "",
-              });
-            }
+    if (userSnapshot.size > 0) {
+      // User already exists, sign in
+      await firebase.auth().signInWithEmailAndPassword(userInfo.email, userInfo.id);
+    } else {
+      // User doesn't exist, sign up
+      await firebase.auth().createUserWithEmailAndPassword(userInfo.email, userInfo.id);
+
+      // Send verification email
+      await firebase.auth().currentUser.sendEmailVerification({
+        handleCodeInApp: true,
+        url: "https://berber-2df5c.firebaseapp.com",
+      });
+
+      // Save user info to Firestore
+      await firebase.firestore().collection("users").doc(firebase.auth().currentUser.uid).set({
+        fullname: `${userInfo.given_name} ${userInfo.family_name}`,
+        email: userInfo.email,
+        phone: "-",
+        password: userInfo.id,
+        image: userInfo.picture,
+        admin: "",
+        barber: "",
+      });
+    }
     setGemail(userInfo.email)
     setGid(userInfo.id)
     setGname(userInfo.name)
@@ -83,7 +74,7 @@ export default function LoginScreen({ navigation }) {
     console.log('Logged in with:', userInfo.email);
   }
 
-    
+
 
 
 
@@ -106,13 +97,13 @@ export default function LoginScreen({ navigation }) {
         navigation.replace("Map")
       }
     })
-  
+
     // Manually set the user object to test navigation
     // const user = auth.currentUser;
     // if (user) {
     //   navigation.replace("Map")
     // }
-  
+
     return unsubscribe
   }, [])
 
@@ -142,7 +133,7 @@ export default function LoginScreen({ navigation }) {
       behavior="padding"
     >
       <View style={styles.inputContainer}>
-      <Image style={styles.tinyLogo}source={require("../../assets/l2.png")}/>
+        <Image style={styles.tinyLogo} source={require("../../assets/l2.png")} />
         <TextInput
           placeholder="Email"
           placeholderTextColor={"#909090"}
@@ -160,20 +151,20 @@ export default function LoginScreen({ navigation }) {
         />
       </View>
 
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity onPress={handleLogin} style={styles.TouchableOpacity} >
-            <Text style={styles.Text}>Login</Text>
-          </TouchableOpacity>
-          <Text style={styles.Text3}>or</Text>
-          <View style={styles.LoginButtons}>
-          <TouchableOpacity disabled={!request} onPress={() => {promptAsync();}} style={styles.TouchableOpacity2} >
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity onPress={handleLogin} style={styles.TouchableOpacity} >
+          <Text style={styles.Text}>Login</Text>
+        </TouchableOpacity>
+        <Text style={styles.Text3}>or</Text>
+        <View style={styles.LoginButtons}>
+          <TouchableOpacity disabled={!request} onPress={() => { promptAsync(); }} style={styles.TouchableOpacity2} >
             <Text style={styles.Text2}><AntDesign name="google" size={24} color="white" /></Text>
           </TouchableOpacity>
-          </View>
-          <TouchableOpacity onPress={()=> navigation.navigate("RegisterScreen")} style={{marginTop:20}}>
+        </View>
+        <TouchableOpacity onPress={() => navigation.navigate("RegisterScreen")} style={{ marginTop: 20 }}>
           <Text style={styles.buttonOutlineText2}>Don't have an account? Register Now</Text>
         </TouchableOpacity>
-        </View> 
+      </View>
     </SafeAreaView>
   )
 
@@ -183,7 +174,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor:"#181818"
+    backgroundColor: "#181818"
   },
   inputContainer: {
     width: '80%'
@@ -191,11 +182,11 @@ const styles = StyleSheet.create({
   buttonOutlineText2: {
     color: '#eee',
     fontWeight: '700',
-    fontSize:  width < 375 ? 11 : 14,
+    fontSize: width < 375 ? 11 : 14,
   },
   input: {
     backgroundColor: '#404040',
-    color:"#fff",
+    color: "#fff",
     paddingHorizontal: 15,
     paddingVertical: 10,
     borderRadius: 10,
@@ -216,14 +207,14 @@ const styles = StyleSheet.create({
   },
   button2: {
     backgroundColor: '#ddd',
-    justifyContent:"flex-end",
+    justifyContent: "flex-end",
     width: 125,
-    backgroundSize:"cover",
-    height:125,
+    backgroundSize: "cover",
+    height: 125,
     padding: 15,
     borderRadius: 15,
-    alignContent:"flex-end",
-    justifyContent:"center",
+    alignContent: "flex-end",
+    justifyContent: "center",
   },
   buttonOutline: {
     backgroundColor: 'white',
@@ -235,15 +226,15 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: '700',
     fontSize: width < 375 ? 13 : 16,
-    justifyContent:"center",
+    justifyContent: "center",
   },
   buttonText2: {
     color: '#dd9900',
-    backgroundColor:"#18181875",
+    backgroundColor: "#18181875",
     fontWeight: '700',
     fontSize: 13,
-    justifyContent:"center",
-    textAlign:"center",
+    justifyContent: "center",
+    textAlign: "center",
   },
   buttonOutlineText: {
     color: '#0782F9',
@@ -251,14 +242,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   tinyLogo: {
-    width:200,
-    backgroundSize:"cover",
-    height:100,
-    marginBottom:15,
-    alignContent:"center",
-    justifyContent:"center",
-    alignItems:"center",
-    alignSelf:"center",
+    width: 200,
+    backgroundSize: "cover",
+    height: 100,
+    marginBottom: 15,
+    alignContent: "center",
+    justifyContent: "center",
+    alignItems: "center",
+    alignSelf: "center",
   },
   TabNavigator2: {
     tabBarShowLabel: false,
@@ -276,9 +267,9 @@ const styles = StyleSheet.create({
   },
   TouchableOpacity: {
     backgroundColor: "#d90",
-    height:50,
+    height: 50,
     padding: 10,
-    width: width-80,
+    width: width - 80,
     borderRadius: 5,
     justifyContent: "center",
     alignContent: "center",
@@ -286,7 +277,7 @@ const styles = StyleSheet.create({
   },
   TouchableOpacity2: {
     backgroundColor: "#d90",
-    height:60,
+    height: 60,
     padding: 10,
     width: 75,
     borderRadius: 50,
@@ -295,33 +286,33 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   LoginButtons: {
-    flexDirection:"row",
-    marginTop:15,
-    width:width,
-    justifyContent:"center",
-    alignContent:"center",
+    flexDirection: "row",
+    marginTop: 15,
+    width: width,
+    justifyContent: "center",
+    alignContent: "center",
   },
   Text: {
-    fontWeight:"900",
-    fontSize:18,
+    fontWeight: "900",
+    fontSize: 18,
     color: "#fff",
     justifyContent: "center",
     alignContent: "center",
     alignSelf: "center",
   },
   Text2: {
-    fontWeight:"900",
-    fontSize:18,
+    fontWeight: "900",
+    fontSize: 18,
     color: "#fff",
     justifyContent: "center",
     alignContent: "center",
     alignSelf: "center",
   },
   Text3: {
-    fontWeight:"900",
-    fontSize:18,
+    fontWeight: "900",
+    fontSize: 18,
     color: "#ddd",
-    marginTop:20,
+    marginTop: 20,
     justifyContent: "center",
     alignContent: "center",
     alignSelf: "center",
@@ -446,7 +437,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   Quapp: {
-    width: width-200,
+    width: width - 200,
     height: 40,
     flex: 0,
     bottom: 20,

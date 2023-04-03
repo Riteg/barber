@@ -8,11 +8,11 @@ const Stack = createNativeStackNavigator();
 
 export default function MapStack({ navigation }) {
   return (
-    <Stack.Navigator>
-    <Stack.Screen  options={{headerShown: false,presentation: 'modal',animationTypeForReplace: 'push',animation:'slide_from_right'}} name="ChooseService" component={ChooseService} />
-    <Stack.Screen  options={{headerShown: false,presentation: 'modal',animationTypeForReplace: 'push',animation:'slide_from_right'}} name="ChooseBarber" component={ChooseBarber} />
-    <Stack.Screen  options={{headerShown: false,presentation: 'modal',animationTypeForReplace: 'push',animation:'slide_from_right'}} name="Finish" component={Finish} />
-    <Stack.Screen  options={{headerShown: false,presentation: 'modal',animationTypeForReplace: 'push',animation:'slide_from_right'}} name="ChooseTime" component={ChooseTime} />
-  </Stack.Navigator>
+    <Stack.Navigator screenOptions={{ gestureDirection: "vertical", gestureEnabled: true, fullScreenGestureEnabled: true }}>
+      <Stack.Screen options={{ headerShown: false, presentation: 'modal', animationTypeForReplace: 'push', animation: 'slide_from_right' }} name="ChooseService" component={ChooseService} />
+      <Stack.Screen options={{ headerShown: false, presentation: 'modal', animationTypeForReplace: 'push', animation: 'slide_from_right' }} name="ChooseBarber" component={ChooseBarber} />
+      <Stack.Screen options={{ headerShown: false, presentation: 'modal', animationTypeForReplace: 'push', animation: 'slide_from_right' }} name="Finish" component={Finish} />
+      <Stack.Screen options={{ headerShown: false, presentation: 'modal', animationTypeForReplace: 'push', animation: 'slide_from_right' }} name="ChooseTime" component={ChooseTime} />
+    </Stack.Navigator>
   );
 }

@@ -269,10 +269,10 @@ export default function ChooseService({ props, navigation }) {
     setRefreshing(false);
   }
   return (
-    <>
+    <View style={{ flex: 1 }}>
       <SafeAreaView style={{ flex: 1, backgroundColor: "#181818" }}>
         <View
-          style={{ width: width, height: height, backgroundColor: "#141414" }}
+          style={{ flex: 1, backgroundColor: "#141414" }}
         >
           <View
             style={{
@@ -323,18 +323,21 @@ export default function ChooseService({ props, navigation }) {
               </TouchableOpacity>
             </View>
             <Text style={styles.barberbutton2}>Choose Service</Text>
-            <FlatList
-              ref={carouselRef}
-              data={filteredList}
-              renderItem={Item}
-              refreshControl={
-                <RefreshControl
-                  refreshing={refreshing}
-                  onRefresh={onRefresh}
-                  tintColor="#F8852D"
-                />
-              }
-            />
+            <View>
+              <FlatList
+                ref={carouselRef}
+                data={filteredList}
+                renderItem={Item}
+                refreshControl={
+                  <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                    tintColor="#F8852D"
+                  />
+                }
+              />
+            </View>
+            <View style={{ flex: 1 }} />
             <View
               style={{
                 flexDirection: "row",
@@ -384,14 +387,15 @@ export default function ChooseService({ props, navigation }) {
           </View>
         </View>
       </SafeAreaView>
-    </>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: "flex-start",
+
     marginBottom: 50,
     width: width,
   },

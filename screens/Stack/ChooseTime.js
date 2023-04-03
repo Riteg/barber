@@ -181,10 +181,10 @@ export default function ChooseTime({ route, navigation }) {
   };
   const [time, setTime] = useState("");
   return (
-    <>
+    <View style={{ flex: 1 }}>
       <SafeAreaView style={{ flex: 1, backgroundColor: "#181818" }}>
         <View
-          style={{ width: width, height: height, backgroundColor: "#141414" }}
+          style={{ flex: 1, backgroundColor: "#141414" }}
         >
           <View
             style={{
@@ -308,7 +308,7 @@ export default function ChooseTime({ route, navigation }) {
           </TouchableOpacity>
         </View>
       </SafeAreaView>
-    </>
+    </View>
   );
 }
 

@@ -17,7 +17,7 @@ import { Tab, Text, TabView, ListItem, Avatar, Image } from "@rneui/themed";
 import * as firebase from "firebase";
 import { signOut } from "firebase/auth";
 import * as ImagePicker from "expo-image-picker";
-import {AntDesign,Ionicons,MaterialCommunityIcons,MaterialIcons,} from "@expo/vector-icons";
+import { AntDesign, Ionicons, MaterialCommunityIcons, MaterialIcons, } from "@expo/vector-icons";
 import { Alert } from "react-native";
 import EditBarber from "./AdminPanel/EditBarber";
 import EditAdmin from "./AdminPanel/EditAdmin";
@@ -82,7 +82,7 @@ export default function Admin({ navigation }) {
       const docRef = await barberAccepted.add({
         userId: accepteduserid,
         time: acceptedtime,
-        suggest:suggest,
+        suggest: suggest,
         hour: acceptedhour,
         service: acceptedservice,
         currentDate: acceptedcurrentdate,
@@ -114,7 +114,7 @@ export default function Admin({ navigation }) {
         .collection("User_Accepted_Appointments");
       const docRef2 = await userAccepted.add({
         userId: accepteduserid,
-        suggest:suggest,
+        suggest: suggest,
         time: acceptedtime,
         hour: acceptedhour,
         service: acceptedservice,
@@ -205,7 +205,7 @@ export default function Admin({ navigation }) {
 
 
 
-  
+
   function Item2(props) {
     const handleOk = () => {
       handleOkey(props.item.docId);
@@ -364,7 +364,7 @@ export default function Admin({ navigation }) {
                 alignContent: "center",
                 alignItems: "center",
                 borderRadius: 50,
-                
+
               }}
             />
             <Text
@@ -373,10 +373,10 @@ export default function Admin({ navigation }) {
                 fontWeight: "700",
                 fontSize: 11,
                 marginTop: 5,
-                marginRight:10
+                marginRight: 10
               }}
             >
-                          Customer {props.item.customername}
+              Customer {props.item.customername}
             </Text>
             <Text
               style={{
@@ -384,7 +384,7 @@ export default function Admin({ navigation }) {
                 fontWeight: "700",
                 fontSize: 11,
                 marginTop: 5,
-                marginRight:10
+                marginRight: 10
               }}
             > for
             </Text>
@@ -412,7 +412,7 @@ export default function Admin({ navigation }) {
                 marginTop: 5,
               }}
             >
-             Barber {props.item.barber}
+              Barber {props.item.barber}
             </Text>
           </View>
           <View style={{ flexDirection: "row" }}>
@@ -562,12 +562,12 @@ export default function Admin({ navigation }) {
                 index === 0
                   ? "#161616"
                   : index === 1
-                  ? "#181818"
-                  : index === 2
-                  ? "#161616"
-                  : index === 3
-                  ? "#181818"
-                  : "",
+                    ? "#181818"
+                    : index === 2
+                      ? "#161616"
+                      : index === 3
+                        ? "#181818"
+                        : "",
               height: width < 375 ? 49 : 75,
             }}
           >
@@ -583,12 +583,12 @@ export default function Admin({ navigation }) {
                 {index === 0
                   ? fullname
                   : index === 1
-                  ? currentEmail
-                  : index === 2
-                  ? phone
-                  : index === 3
-                  ? "****"
-                  : ""}
+                    ? currentEmail
+                    : index === 2
+                      ? phone
+                      : index === 3
+                        ? "****"
+                        : ""}
               </ListItem.Subtitle>
             </ListItem.Content>
             <ListItem.Chevron color="white" />
@@ -974,7 +974,7 @@ export default function Admin({ navigation }) {
       .catch((error) => {
         // Handle errors here
         Alert.alert("Error", error.message);
-      });
+      })
     setModalVisible(false);
   };
   const handleChangeEmail = () => {
@@ -1065,6 +1065,7 @@ export default function Admin({ navigation }) {
       console.error("Error updating phone number:", error);
     }
   };
+
   const [refreshing, setRefreshing] = useState(!1);
   function onRefresh() {
     console.log("yenilendi");
@@ -1105,7 +1106,7 @@ export default function Admin({ navigation }) {
           borderTopColor: "#999",
           borderTopWidth: 0.2,
         }}
-        onChange={(e) => setIndex(e)}
+        onChange={setIndex}
         indicatorStyle={{
           backgroundColor: "white",
           height: 2,
@@ -1120,7 +1121,7 @@ export default function Admin({ navigation }) {
         value={index}
         onChange={setIndex}
         animationType="timing"
-        disableSwipe={true}
+        disableSwipe={false}
       >
         <TabView.Item style={{ backgroundColor: "#181818", width: "100%" }}>
           <View
@@ -1153,41 +1154,41 @@ export default function Admin({ navigation }) {
           </View>
         </TabView.Item>
         <TabView.Item
-                style={{ backgroundColor: "#181818", width: "100%" }}
+          style={{ backgroundColor: "#181818", width: "100%" }}
+        >
+          <View
+            style={{
+              width: width,
+              height: height,
+              backgroundColor: "#141414",
+            }}
+          >
+            <View style={{ marginBottom: 50 }}>
+              <Text
+                style={{
+                  color: "white",
+                  fontWeight: "700",
+                  fontSize: 18,
+                  marginLeft: 15,
+                }}
               >
-                <View
-                  style={{
-                    width: width,
-                    height: height,
-                    backgroundColor: "#141414",
-                  }}
-                >
-                  <View style={{ marginBottom: 50 }}>
-                    <Text
-                      style={{
-                        color: "white",
-                        fontWeight: "700",
-                        fontSize: 18,
-                        marginLeft: 15,
-                      }}
-                    >
-                      Waiting Appointments
-                    </Text>
-                    <FlatList
-                      data={barberappointment}
-                      renderItem={Item2}
-                      refreshControl={
-                        <RefreshControl
-                          refreshing={refreshing}
-                          onRefresh={onRefresh}
-                          tintColor="#F8852D"
-                        />
-                      }
-                      style={{ marginBottom: 130 }}
-                    />
-                  </View>
-                </View>
-              </TabView.Item>
+                Waiting Appointments
+              </Text>
+              <FlatList
+                data={barberappointment}
+                renderItem={Item2}
+                refreshControl={
+                  <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                    tintColor="#F8852D"
+                  />
+                }
+                style={{ marginBottom: 130 }}
+              />
+            </View>
+          </View>
+        </TabView.Item>
         <TabView.Item style={{ backgroundColor: "#181818", width: "100%" }}>
           <View
             style={{ width: width, height: height, backgroundColor: "#181818" }}
