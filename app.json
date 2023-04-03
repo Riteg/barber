@@ -4,7 +4,7 @@
     "currentFullName": "@owner/slug",
     "originalFullName": "@burakvncc/barber",
     "slug": "barber",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "useNextNotificationsApi": true,
     "runtimeVersion": {
       "policy": "sdkVersion"
